@@ -63,14 +63,28 @@ $department = $_settings->userdata('department');
                                       </p>
                                     </a>
                                   </li> 
-                                  <li class="nav-item dropdown">
-                                    <a href="<?php echo base_url ?>admin/?page=sales/create" class="nav-link nav-sales">
-                                      <i class="nav-icon fas fa-plus"></i>
-                                      <p>
-                                        Create New RA
-                                      </p>
-                                    </a>
-                                  </li> 
+                                  <li class="nav-item">
+                                      <a href="#" class="nav-link nav-ra">
+                                          <i class="nav-icon fas fa-plus"></i>
+                                          <p>New Create RA</p>
+                                      </a>
+                                      <ul class="nav nav-treeview">
+                                          <li class="nav-item">
+                                              <a href="<?php echo base_url ?>admin/?page=sales/create" class="nav-link">
+                                                  <i class="nav-icon fas fa-cube"></i>
+                                                  <p>Lot Only / Packaged</p>
+                                              </a>
+                                          </li>
+                                          <li class="nav-item">
+                                              <a href="<?php echo base_url ?>admin/?page=sales/create_v2" class="nav-link">
+                                                  <i class="nav-icon fas fa-tools"></i>
+                                                  <p>Additional House / Fence / Add Cost</p>
+                                              </a>
+                                          </li>
+                                      </ul>
+                                  </li>
+
+
                                   <li class="nav-item dropdown">
                                     <a href="<?php echo base_url ?>admin/?page=ra" class="nav-link nav-ra">
                                     <i class="nav-icon fas fa-book"></i>

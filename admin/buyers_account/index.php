@@ -18,22 +18,12 @@ $pass = "admin12345";
 
 $conn = odbc_connect($dsn, $user, $pass);
 
+
 if (!$conn) {
     die("Connection failed: " . odbc_errormsg());
 }
 
 
-##### JUDZ CONNECTION ######
-$dbhost = 'localhost';
-$dbport = '5432'; // default PostgreSQL port
-$dbname = 'CAR_TESTDB';
-$dbuser = 'glicelo';
-$dbpass = 'admin12345';
-
-$cnx  = pg_connect("host=$dbhost port=$dbport dbname=$dbname user=$dbuser password=$dbpass");
-if (!$cnx) {
-    die("Error connecting to PostgreSQL database: " . pg_last_error());
-}
 
 
 
@@ -50,60 +40,7 @@ if($l_acct_no != ''){
 	$row = odbc_fetch_array($l_qry);
     if ($row === false) {
         echo "Error: No account found with the provided account number.";
-    } else {
-		while (odbc_fetch_row($l_qry)):
-			 ///LOT
-             $l_acct_no = $row['c_account_no'];
-             $type = $row['c_type'];
-             $lot_area = $row['c_lot_area'];
-             $price_sqm = $row['c_price_sqm'];
-             $lot_disc = $row['c_lot_discount'];
-             $lot_disc_amt = $row['c_lot_discount_amt'];
-             $lres = $lot_area * $price_sqm;
-             $lcp = $lres-($lres*($lot_disc*0.01));
-     
-             //HOUSE
-             $house_model = $row['c_house_model'];
-             $floor_area = $row['c_floor_area'];
-             $house_price_sqm = $row['c_house_price_sqm'];
-             $house_disc = $row['c_house_discount'];
-             $house_disc_amt = $row['c_house_discount_amt'];
-             $hres = $floor_area * $house_price_sqm;
-             $hcp = $hres-($hres*($house_disc*0.01));
-             
-             //PAYMENT
-             $tcp = $row['c_tcp'];
-             $tcp_discount = $row['c_tcp_discount'];
-             $tcp_discount_amt = $row['c_tcp_discount_amt'];
-             
-             $vat_amt = $row['c_vat_amount'];
-             $vat =$vat_amt/$tcp * 100;
-             $net_tcp = $row['c_net_tcp'];
-     
-             $reservation = $row['c_reservation'];
-             $p1 = $row['c_payment_type1'];
-             $p2 = $row['c_payment_type2'];
-     
-             $amt_fnanced = $row['c_amt_financed'];
-             $monthly_down = $row['c_monthly_down'];
-             $first_dp = $row['c_first_dp'];
-             $full_down = $row['c_full_down'];
-             $terms = $row['c_terms'];
-             $interest_rate = $row['c_interest_rate'];
-             $fixed_factor = $row['c_fixed_factor'];
-             $monthly_payment = $row['c_monthly_payment'];
-             $no_payments = $row['c_no_payments'];
-             $net_dp = $row['c_net_dp'];
-             $down_percent = $row['c_down_percent'];
-             $start_date = $row['c_start_date'];
-             
-        
-		endwhile;
-
-
-
-	}
-
+    }
 }
 ?>
 
@@ -139,10 +76,13 @@ if($l_acct_no != ''){
                             <a class="nav-link" id="computation-tab" data-toggle="tab" href="#computation" role="tab" aria-controls="computation" aria-selected="false">Payment Computation</a>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <a class="nav-link" id="due-record-tab" data-toggle="tab" href="#due-record" role="tab" aria-controls="due-record" aria-selected="false">Due/Over Due Details</a>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <a class="nav-link" id="payment-record-tab" data-toggle="tab" href="#payment-record" role="tab" aria-controls="payment-record" aria-selected="false">Payment Record</a>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link" id="due-record-tab" data-toggle="tab" href="#due-record" role="tab" aria-controls="due-record" aria-selected="false">Due/Over Due Details</a>
+                            <a class="nav-link" id="payment-sched-tab" data-toggle="tab" href="#payment-sched" role="tab" aria-controls="payment-sched" aria-selected="false">Payment Schedule</a>
                         </li>
                         <li class="nav-item" role="presentation">
                             <a class="nav-link" id="commission-tab" data-toggle="tab" href="#commission" role="tab" aria-controls="commission" aria-selected="false">Commission</a>
@@ -165,15 +105,39 @@ if($l_acct_no != ''){
                                                 <button type="button" class="btn btn-block btn-sm btn-danger btn-flat border-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                                     <i class="fa fa-cogs"></i> Settings 
                                                 </button>
-                                                <div class="dropdown-menu"> 
+                                                <div class="dropdown-menu">
                                                     <a class="dropdown-item update_bci" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Update BCI</a>
-                                                    <a class="dropdown-item set_retention" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Set Retention</a>
-                                                    <a class="dropdown-item account_rest" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Account Restructuring</a>
+                                                    
+                                                <?php 
+                                                    // Check if account status is 'Fully Paid' or balance is zero
+                                                    if ($row['c_account_status'] != 'Fully Paid' && $row['c_balance'] > 0) {
+                                                        // If account is not fully paid and balance is not zero, show Set Retention and Account Restructuring
+                                                        
+                                                        // Check if retention is 0 or 1
+                                                        if ($row['c_retention'] == '0') {
+                                                            // If c_retention is 0, show 'Set Retention'
+                                                            echo '<a class="dropdown-item set_retention" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)">Set Retention</a>';
+                                                        } elseif ($row['c_retention'] == '1') {
+                                                            // If c_retention is 1, show 'Remove Retention'
+                                                            echo '<a class="dropdown-item remove_retention" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)">Remove Retention</a>';
+                                                        }
+
+                                                        // Show 'Account Restructuring' if conditions are met
+                                                        echo '<a class="dropdown-item account_rest" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)">Account Restructuring</a>';
+                                                    } else {
+                                                        // Disable the items by making them unclickable or hiding them
+                                                        echo '<a class="dropdown-item set_retention disabled" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)" style="pointer-events: none; opacity: 0.5;">Set Retention</a>';
+                                                        echo '<a class="dropdown-item account_rest disabled" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)" style="pointer-events: none; opacity: 0.5;">Account Restructuring</a>';
+                                                    }
+                                                ?>
+
+                                                    
                                                     <div class="dropdown-divider"></div>
                                                     <a class="dropdown-item billing_remark" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Billing Remarks</a>
                                                     <div class="dropdown-divider"></div>
                                                     <a class="dropdown-item additional_inv" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Add to Additional Inventory</a>
                                                 </div>
+
                                             </div>
                                        
                                         </td>
@@ -354,6 +318,11 @@ if($l_acct_no != ''){
                                 <?php include ('over_due_record.php'); ?>
                             </div>
                         </div>
+                        <div class="tab-pane fade" id="payment-sched" role="tabpanel" aria-labelledby="payment-sched-tab">
+                            <div class="card mt-3">  
+                                <?php include ('payment_sched.php'); ?>
+                            </div>
+                        </div>
                         <div class="tab-pane fade" id="commission" role="tabpanel" aria-labelledby="commission-tab">
                             <div class="card mt-3">
                                 <!-- Commission content goes here -->
@@ -404,12 +373,18 @@ $(document).ready(function() {
     $('.additional_inv').click(function(){
 		uni_modal("Add to Additional Inventory","buyers_account/additional_inv.php?acc="+$(this).attr('data-acc'),'mid-large')
 	});
+    $('.account_rest').click(function(){
+		uni_modal("Account Restructuring","buyers_account/restructuring.php?acc="+$(this).attr('data-acc'),'mid-large')
+	});
 
     $('.billing_remark').click(function(){
 		uni_modal("Billing Remarks Window","buyers_account/billing_remarks.php?acc="+$(this).attr('data-acc'),'mid-large')
 	});
     $('.set_retention').click(function(){
         _conf("Are you sure you want to retention this account?","set_retention",[$(this).attr('data-acc')])
+    }) 
+    $('.remove_retention').click(function(){
+        _conf("Are you sure you want to remove retention this account?","remove_retention",[$(this).attr('data-acc')])
     }) 
 
    
@@ -448,6 +423,41 @@ $(document).ready(function() {
                 }
         })
     }
+
+    function remove_retention($id){
+        start_loader();
+        $.ajax({
+            url:_base_url_+"classes/New_Master.php?f=remove_retention",
+            method:"POST",
+            data:{id: $id},
+            dataType:"json",
+            error:err=>{
+                console.log(err)
+                alert_toast("An error occured.",'error');
+                end_loader();
+            },
+            success: function(resp){
+                    if (resp.status == 'success'){
+                        alert_toast(resp.msg, 'success');
+                        setTimeout(function() {
+                            location.reload();
+                        }, 2000);
+                    } else if (!!resp.msg){
+                        el.addClass("alert-danger");
+                        el.text(resp.msg);
+                        _this.prepend(el);
+                    } else {
+                        el.addClass("alert-danger");
+                        el.text("An error occurred due to unknown reason.");
+                        _this.prepend(el);
+                    }
+                    el.show('slow');
+                    $('html, body, .modal').animate({scrollTop:0}, 'fast');
+                    end_loader();
+                }
+        })
+    }
+
 
 
     document.addEventListener("DOMContentLoaded", function() {

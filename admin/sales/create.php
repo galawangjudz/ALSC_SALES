@@ -589,19 +589,28 @@ input{
 
 														<div class="col-md-2">
 															<div class="form-group">
-																<label class="control-label">Birthdate: </label>
-																	<input type="text" class="form-control buyer-bday required datepicker" name="birth_day[]" placeholder="YYYY-MM-DD" value="<?php echo isset($birth_date) ? $birth_date : ''; ?>">
-
-																	<!-- <input type="date" class="form-control buyer-bday required" name="birth_day[]" placeholder="YYYY-MM-DD" value="<?php echo isset($birth_date) ? $birth_date : ''; ?>">		
-														 -->	</div>
+																<label class="control-label">Birthdate:</label>
+																<input type="text" 
+																	class="form-control buyer-bday required datepicker" 
+																	name="birth_day[]" 
+																	placeholder="YYYY-MM-DD" 
+																	id="birth_date"
+																	value="<?php echo isset($birth_date) ? $birth_date : ''; ?>">
+															</div>
 														</div>
 														<div class="col-md-1">
 															<div class="form-group">
-																<label class="control-label">Age: </label>
-																<input type="text" class="form-control margin-bottom buyer-age required" name="age[]" id="age" value="<?php echo isset($customer_age) ? $customer_age : ''; ?> "readonly>
+																<label class="control-label">Age:</label>
+																<input type="text" 
+																	class="form-control margin-bottom buyer-age required" 
+																	name="age[]" 
+																	id="age" 
+																	value="<?php echo isset($customer_age) ? $customer_age : ''; ?>" 
+																	readonly>
 															</div>
-														</div>	
-														<div class="col-md-3">
+														</div>
+														<?php $relationship = 0 ?>
+														<!-- <div class="col-md-3">
 															<div class="form-group">
 																<style>
 																	select:invalid { color: gray; }
@@ -615,7 +624,7 @@ input{
 																		<option name="customer_relation" value="4" <?php echo isset($relationship) && $relationship == 4 ? 'selected' : '' ?>>Minor/Represented by Legal Guardian</option>
 																</select>
 															</div>
-														</div>
+														</div> -->
 													</div>
 
 													<div class="row">
@@ -652,6 +661,35 @@ input{
 															</div>
 														</div>
 													</div>
+
+													<div class="col-md-4">
+														<div class="form-group">
+															<label class="control-label">Province:</label>
+															<select class="form-control buyer-province required" name="province[]" id="province">
+																<option value="">Select Province</option>
+															</select>
+														</div>
+													</div>
+													<div class="col-md-4">
+														<div class="form-group">
+															<label class="control-label">City/Municipality:</label>
+															<select class="form-control buyer-city required" name="city[]" id="city" disabled>
+																<option value="">Select City/Municipality</option>
+															</select>
+														</div>
+													</div>
+													<div class="col-md-4">
+														<div class="form-group">
+															<label class="control-label">Area Code:</label>
+															<input type="text" 
+																class="form-control margin-bottom buyer-zipcode required" 
+																name="zip_code[]" 
+																id="zip_code" 
+																readonly>
+														</div>
+													</div>
+
+
 
 													<div class="row">
 														<div class="col-md-9">
@@ -764,21 +802,28 @@ input{
 	
 															<div class="col-md-2">
 																<div class="form-group">
-																	<label class="control-label">Birthdate: </label>
-																		<input type="text" class="form-control buyer-bday required datepicker" name="birth_day[]" placeholder="YYYY-MM-DD" value="<?php echo isset($birth_date) ? $birth_date : ''; ?>">
-																	<!-- 	<input type="date" class="form-control buyer-bday required" name="birth_day[]" placeholder="YYYY-MM-DD" value="<?php echo isset($birth_date) ? $birth_date : ''; ?>">		 -->
-																	
-																
+																	<label class="control-label">Birthdate:</label>
+																	<input type="text" 
+																		class="form-control buyer-bday required datepicker" 
+																		name="birth_day[]" 
+																		placeholder="YYYY-MM-DD" 
+																		id="birth_date"
+																		value="<?php echo isset($birth_date) ? $birth_date : ''; ?>">
 																</div>
 															</div>
 															<div class="col-md-1">
 																<div class="form-group">
-																	<label class="control-label">Age: </label>
-																	<input type="text" class="form-control margin-bottom buyer-age required" name="age[]" id="age" value="<?php echo isset($customer_age) ? $customer_age : ''; ?> "readonly>
+																	<label class="control-label">Age:</label>
+																	<input type="text" 
+																		class="form-control margin-bottom buyer-age required" 
+																		name="age[]" 
+																		id="age" 
+																		value="<?php echo isset($customer_age) ? $customer_age : ''; ?>" 
+																		readonly>
 																</div>
-															</div>	
-																	
-															<div class="col-md-3">
+															</div>
+															<?php $relationship = 0 ?>
+															<!-- <div class="col-md-3">
 																<div class="form-group">
 																	<style>
 																		select:invalid { color: gray; }
@@ -793,7 +838,7 @@ input{
 		
 																	</select>
 																</div>
-															</div>
+															</div> -->
 														</div>
 
 														
@@ -831,6 +876,33 @@ input{
 																</div>
 															</div>
 														</div>
+
+														<div class="col-md-4">
+															<div class="form-group">
+																	<label class="control-label">Province:</label>
+																	<select class="form-control buyer-province required" name="province[]" id="province">
+																		<option value="">Select Province</option>
+																	</select>
+																</div>
+															</div>
+															<div class="col-md-4">
+																<div class="form-group">
+																	<label class="control-label">City/Municipality:</label>
+																	<select class="form-control buyer-city required" name="city[]" id="city" disabled>
+																		<option value="">Select City/Municipality</option>
+																	</select>
+																</div>
+															</div>
+															<div class="col-md-4">
+																<div class="form-group">
+																	<label class="control-label">Area Code:</label>
+																	<input type="text" 
+																		class="form-control margin-bottom buyer-zipcode required" 
+																		name="zip_code[]" 
+																		id="zip_code" 
+																		readonly>
+																</div>
+															</div>
 	
 														<div class="row">
 															<div class="col-md-9">
@@ -1563,10 +1635,50 @@ input{
 	</div>
 </div>
 </body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<script>
+    $(document).ready(function() {
+        // Initialize datepicker
+        $(".datepicker").datepicker({
+            dateFormat: "yy-mm-dd",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0", // Allows selection of birthdates within the last 100 years
+            onSelect: function(dateText) {
+                calculateAge(dateText); // Call function when a date is selected
+            }
+        });
+
+        // Function to calculate age
+        function calculateAge(birthDate) {
+            const today = new Date();
+            const birth = new Date(birthDate);
+            let age = today.getFullYear() - birth.getFullYear();
+            const m = today.getMonth() - birth.getMonth();
+
+            // Adjust age if the birthdate hasn't occurred yet this year
+            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+                age--;
+            }
+
+            // Set the calculated age in the age input
+            $("#age").val(age);
+        }
+
+        // Calculate age if there's a pre-filled birthdate
+        const preFilledDate = $("#birth_date").val();
+        if (preFilledDate) {
+            calculateAge(preFilledDate);
+        }
+    });
+</script>
 
 <script>
 	
-	$(".buyer-bday").on("change", function() {
+	/* $(".buyer-bday").on("change", function() {
             // Get the entered date value
             var enteredDate = $(this).val();
             // Check if the entered date is in YYYY-MM-DD format
@@ -1603,7 +1715,7 @@ input{
                 $("#age").val("");
                 alert_toast("Please enter a valid date in YYYY-MM-DD format.",'error');
             }
-        });
+        }); */
 
 	$(".buyer-first").on("input", function() {
 		validateNoSpecialChars(this);
@@ -1882,4 +1994,64 @@ input{
 
 		document.getElementById('add_cost_total').value = result;
 	}
+</script>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        // Sample data for provinces, cities, and area codes (you can replace this with an actual database or API)
+        const philippinesData = {
+            "Metro Manila": {
+                "Manila": "1000",
+                "Makati": "1210",
+                "Pasig": "1600"
+            },
+            "Cebu": {
+                "Cebu City": "6000",
+                "Mandaue City": "6014",
+                "Lapu-Lapu City": "6015"
+            },
+            "Davao": {
+                "Davao City": "8000",
+                "Panabo City": "8105",
+                "Tagum City": "8100"
+            }
+        };
+
+        // Populate provinces
+        const provinceSelect = $("#province");
+        $.each(philippinesData, function(province, cities) {
+            provinceSelect.append(new Option(province, province));
+        });
+
+        // Handle province change
+        $("#province").on("change", function() {
+            const selectedProvince = $(this).val();
+            const citySelect = $("#city");
+            citySelect.empty().append(new Option("Select City/Municipality", "")).prop("disabled", true);
+
+            if (selectedProvince) {
+                // Populate cities based on selected province
+                $.each(philippinesData[selectedProvince], function(city, zipCode) {
+                    citySelect.append(new Option(city, city));
+                });
+                citySelect.prop("disabled", false);
+            }
+        });
+
+        // Handle city change
+        $("#city").on("change", function() {
+            const selectedProvince = $("#province").val();
+            const selectedCity = $(this).val();
+
+            if (selectedProvince && selectedCity) {
+                const zipCode = philippinesData[selectedProvince][selectedCity];
+                $("#zip_code").val(zipCode);
+            } else {
+                $("#zip_code").val("");
+            }
+        });
+    });
 </script>

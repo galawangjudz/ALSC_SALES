@@ -104,6 +104,25 @@ Class Master extends DBConnection2{
 
     }
 
+    function remove_retention() {
+        extract($_POST);
+        // Extract POST data into variables
+        $l_sql = "UPDATE t_buyers_account set c_retention = '0' where c_account_no = ".$id;
+
+        $ret = odbc_exec($this->conn2, $l_sql);
+		if($ret){
+
+			$resp['status'] = 'success';
+            $resp['msg'] = " Account successfully remove to Retention.";
+		
+		}else{
+			$resp['status'] = 'failed';
+			$resp['error'] =  odbc_errormsg($this->conn2);
+		}
+		return json_encode($resp);
+
+    }
+
     function update_billing_remarks() {
         extract($_POST);
 		
@@ -170,6 +189,11 @@ switch ($action) {
     case 'set_retention':
         echo $Master->set_retention();
         break;
+
+    case 'remove_retention':
+        echo $Master->remove_retention();
+        break;
+    
 
     case 'update_billing_remarks':
         echo $Master->update_billing_remarks();

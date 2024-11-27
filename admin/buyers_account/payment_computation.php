@@ -69,7 +69,7 @@
                         <!-- Sixth Row -->
                         <tr>
                             <td><label class="control-label" id='loan_text'>Amount to be Financed:</label></td>
-                            <td><input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_to_be_financed" id="amt_to_be_financed" value="<?= $row['c_amt_financed'] ?>" readonly></td>
+                            <td><input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_to_be_financed" id="amt_to_be_financed" value="<?= number_format($row['c_amt_financed'],2) ?>" readonly></td>
                             <td><label class="control-label">Terms:</label></td>
                             <td><input type="text" class="form-control margin-bottom required terms-count" name="terms" id="terms" value="<?= $row['c_terms'] ?>" readonly></td>
                         </tr>
@@ -83,7 +83,7 @@
                         <!-- Eighth Row -->
                         <tr>
                             <td><label class="control-label">Monthly Payment:</label></td>
-                            <td><input type="text" class="form-control margin-bottom required monthly-amor" name="monthly_amortization" id="monthly_amortization" value="<?= $row['c_monthly_payment'] ?> "readonly></td>
+                            <td><input type="text" class="form-control margin-bottom required monthly-amor" name="monthly_amortization" id="monthly_amortization" value="<?= number_format($row['c_monthly_payment'],2) ?> "readonly></td>
                             <td><label class="control-label" id="start_text">Start Date:</label></td>
                             <td><input type="text" class="form-control required mo-start-date" name="start_date" id="start_date" value="<?= $row['c_start_date'] ?>" readonly></td>
                         </tr>
