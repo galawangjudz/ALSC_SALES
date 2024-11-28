@@ -18,8 +18,6 @@ if (!$conn) {
 // Get account number from the URL
 $l_find = isset($_GET['acc']) ? $_GET['acc'] : '';
 
-$l_find = '15200202102';
-
 // Prepare SQL query
 $l_sql = "SELECT * FROM t_buyers_account WHERE c_account_no = ?";
 $l_qry = odbc_prepare($conn, $l_sql);
@@ -366,7 +364,7 @@ input{
 
 
 </style>
-<body onload="showTab()">
+<body>
 <div class="card card-outline rounded-0 card-maroon">
     
 	<div class="card-header">
@@ -492,11 +490,11 @@ input{
         <div class="col-md-12">
             <div class="form-group down-frm" id= "down_frm" >
                 <label for="net_dp" class="control-label">Total DP Due: </label>
-                <input type="text" class="form-control margin-bottom required net-dp" name="net_dp" id="net_dp" value="<?php echo isset($net_dp) ? $net_dp : 0; ?>" readonly>
+                <input type="text" class="form-control margin-bottom required net-dp" name="net_dp" id="net_dp" value="<?php echo isset($net_dp) ? number_format($net_dp,2) : 0; ?>" readonly>
                 <label for="less_paymt_dte" class="control-label" >Less Paym't to Date : </label>
                 <input type="text" class="form-control less-paymt-date" name="less_paymt_dte" id="less_paymt_dte" value="0">
                 <label for="dp_bal" class="control-label">DP Balance : </label>
-                <input type="text" class="form-control margin-bottom required dp-bal" name="dp_bal" id="dp_bal" value="<?php echo isset($net_dp) ? $net_dp : 0; ?>" readonly>
+                <input type="text" class="form-control margin-bottom required dp-bal" name="dp_bal" id="dp_bal" value="<?php echo isset($net_dp) ? number_format($net_dp,2) : 0; ?>" readonly>
                 <label for="acc_surcharge1" class="control-label" >Accrued Surcharge: </label>
                 <input type="text" class="form-control margin-bottom required acc-surcharge1" name="acc_surcharge1" id="acc_surcharge1" value="0">
                 <label for= "rem_dp" class="control-label">Rem. DP Term/s : </label>
@@ -504,9 +502,9 @@ input{
                 <label for= "monthly_down" class="control-label" id ="mo_down_text">Monthly Down: </label>
                 <input type="text" class="form-control margin-bottom required monthly-down" name="monthly_down" id="monthly_down" value="<?php echo isset($monthly_down) ? number_format($monthly_down,2) : 0; ?>"  >
                 <label class="control-label">Commencing: </label>
-                <input type="date" class="form-control first-dp-date" name="first_dp_date" id = "first_dp_date" value="<?php echo isset($first_dp) ? $first_dp : ''; ?>">
+                <input type="date" class="form-control first-down-date" name="first_down_date" id = "first_down_date" value="<?php echo isset($first_dp) ? $first_dp : ''; ?>">
                 <label class="control-label">Until: </label>        
-                <input type="date" class="form-control full-down-date" name="full_down_date" id = "full_down_date" value="<?php echo isset($full_down) ? $full_down : ''; ?>">
+                <input type="date" class="form-control fd-date" name="fd_date" id = "fd_date" value="<?php echo isset($full_down) ? $full_down : ''; ?>">
                     
                 
             </div>
@@ -515,7 +513,7 @@ input{
     <div class="payment_box2" id="p2">	
         <div class="col-md-12">
              <label class="control-label" id ="amt_tobe_financed_text" >Amount to be Financed:</label>
-             <input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_to_be_financed" id="amt_to_be_financed" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>"readonly>
+             <input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_to_be_financed" id="amt_2b_financed" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>"readonly>
              <label class="control-label" id="acc_int_text">Acc. Interest:</label>
              <input type="text" class="form-control margin-bottom required acc-interest" name="acc_interest" id="acc_interest" value="0">
              <label class="control-label"  id="acc_sur_text" >Acc. Surcharge:</label>
@@ -524,21 +522,21 @@ input{
              <input type="text" class="form-control margin-bottom required adj-prin-bal" name="adj_prin_bal" id="adj_prin_bal" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>" readonly>
            
              <div class="form-group monthly-frm" id = "monthly_frm">
-              <?php if ($account_status == 'Monthly Amortization'): ?>
+              <?php if ($account_status == 'Monthly Amortization' || $account_status == 'Deferred Cash Payment' )  : ?>
                 <label class="control-label">Terms: </label> <i> Note: Remaining Terms is <?php echo $remain_terms; ?> </i>
                 <?php else:?>
-                <label class="control-label">Terms: </label>
+                <label class="control-label">Terms:  <?php echo $remain_terms = $terms; ?></label>
                 <?php endif; ?>
-                <input type="text" class="form-control margin-bottom required term-days" name="terms" id="terms" value="<?php echo isset($terms) ? $terms : 1; ?>">
-                <label for='interest_rate' class="control-label" id='rate_text'>Interest Rate: </label>
-                <input type="text" class="form-control margin-bottom required interest-rate" name="interest_rate" id="interest_rate" value="<?php echo isset($interest_rate) ? $interest_rate : 0; ?>">
-                <label for='fixed_factor' class="control-label" id='factor_text' >Fixed Factor: </label>
-                <input type="text" class="form-control margin-bottom required fixed-factor" name="fixed_factor" id="fixed_factor" value="<?php echo isset($fixed_factor) ? $fixed_factor : 0; ?>" readonly>
+                <input type="text" class="form-control margin-bottom required ma-terms" name="ma_terms" id="ma_terms" value="<?php echo isset($remain_terms) ? $remain_terms : 1; ?>">
+                <label for='int_rate' class="control-label" id='rate_text'>Interest Rate: </label>
+                <input type="text" class="form-control margin-bottom required int-rate" name="int_rate" id="int_rate" value="<?php echo isset($interest_rate) ? $interest_rate : 0; ?>">
+                <label for='fxd_factor' class="control-label" id='factor_text' >Fixed Factor: </label>
+                <input type="text" class="form-control margin-bottom required fixed-factor" name="fxd_factor" id="fxd_factor" value="<?php echo isset($fixed_factor) ? $fixed_factor : 0; ?>" readonly>
                 <label class="control-label">Monthly Payment: </label>
-                <input type="text" class="form-control margin-bottom required monthly-amor" name="monthly_amortization" id="monthly_amortization" value="<?php echo isset($monthly_payment) ? number_format($monthly_payment,2) : 0; ?> "readonly>	
+                <input type="text" class="form-control margin-bottom required monthly-amor" name="mo_amort" id="mo_amort" value="<?php echo isset($monthly_payment) ? number_format($monthly_payment,2) : 0; ?> "readonly>	
             </div>
             <label class="control-label" id= "start_text">Start Date: </label>	
-            <input type="date" class="form-control required mo-start-date" name="start_date" id = "start_date" value="<?php echo isset($start_date) ? $start_date : ''; ?>">
+            <input type="date" class="form-control required mo-start-date" name="start_date" id = "start_date" value="<?php echo date('Y-m-d'); ?>">
         </div>
     </div>
     </div>
@@ -553,16 +551,16 @@ $(document).ready(function () {
 
 // Initial setup based on payment types
 <?php if ($payment_type2 == 'Deferred Cash Payment'): ?>
-    $("#interest_rate, #fixed_factor, #rate_text, #factor_text").val(0).hide();
+    $("#int_rate, #fxd_factor, #rate_text, #factor_text").val(0).hide();
 <?php endif; ?>
 
 <?php if (in_array($account_status, ['Monthly Amortization', 'Full DownPayment', 'No DownPayment'])): ?>
-    $('#down_frm, #net_dp, #less_paymt_dte, #dp_bal, #acc_surcharge1, #no_payment, #monthly_down, #first_dp_date, #full_down_date, #p1, #p1_box').hide();
+    $('#down_frm, #net_dp, #less_paymt_dte, #dp_bal, #acc_surcharge1, #no_payment, #monthly_down, #first_down_date, #fd_date, #p1, #p1_box').hide();
     $('#p2_box, #p2').width('65%');
 <?php elseif ($account_status == 'Deferred Cash Payment'): ?>
-    $('#down_frm, #net_dp, #less_paymt_dte, #dp_bal, #acc_surcharge1, #no_payment, #monthly_down, #first_dp_date, #full_down_date, #p1, #p1_box').hide();
+    $('#down_frm, #net_dp, #less_paymt_dte, #dp_bal, #acc_surcharge1, #no_payment, #monthly_down, #first_down_date, #fd_date, #p1, #p1_box').hide();
     $('#p2_box, #p2').width('65%');
-    $("#interest_rate, #fixed_factor, #rate_text, #factor_text").val(0).hide();
+    $("#int_rate, #fxd_factor, #rate_text, #factor_text").val(0).hide();
 <?php else: ?>
     $('#down_frm').show();
 <?php endif; ?>
@@ -570,74 +568,124 @@ $(document).ready(function () {
 // Set balance values
 var balance = <?php echo $balance; ?>;
 <?php if (in_array($account_status, ['Monthly Amortization', 'Full DownPayment', 'Deferred Cash Payment'])): ?>
+    var balance = <?php echo $balance; ?>;
     $('#amt_to_be_financed, #adj_prin_bal').val(balance);
 <?php endif; ?>
 
 // Event listeners for dynamic updates
-$(document).on('change', ".acc-interest, .acc-surcharge2, .term-days, .adj-prin-bal, .interest-rate", function () {
-    compute_adj_prin();
+$(document).on('change', ".acc-interest, .acc-surcharge2, .ma-terms, .adj-prin-bal, .int-rate", function () {
+    compute_adjustment_prin();
+    compute_ma();
+
 });
 
 $(document).on('change', ".less-paymt-date, .acc-surcharge1", function () {
-    update_down_payment_balance();
+    //update_down_payment_balance();
+    mo_downpayment();
+    auto_no_terms();
 });
 
-$(document).on('change', ".rem-dp, .first-dp-date", function () {
-    compute_rem_dp();
-    auto_terms();
+$(document).on('change', ".rem-dp, .first-down-date", function () {
+    mo_downpayment();
+    auto_no_terms();
 });
 
 $(document).on('change', ".pay-type2", payment_type2_changed);
 $(document).on('change', ".pay-type1", payment_type1_changed);
 
-// Down payment calculations
-function update_down_payment_balance() {
-    var net_dp = parseFloat($('.net-dp').val() || 0);
-    var less = parseFloat($('.less-paymt-date').val() || 0);
-    var acc_sur1 = parseFloat($('.acc-surcharge1').val() || 0);
 
+
+
+function mo_downpayment(){
+    var net_dp = parseFloat($('.net-dp').val().replace(/,/g, '') || 0);
+    var less = parseFloat($('.less-paymt-date').val().replace(/,/g, '') || 0);
+    var acc_sur1 = parseFloat($('.acc-surcharge1').val().replace(/,/g, '') || 0);
+    var remaining_payments = parseFloat($('.rem-dp').val().replace(/,/g, '') || 1);
     var dp_bal = net_dp - less;
     var total_dp_bal = dp_bal + acc_sur1;
 
-    $("#dp_bal").val(total_dp_bal);
+    $("#dp_bal").val(total_dp_bal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
     compute_rem_dp();
 }
 
+
+
 function compute_rem_dp() {
-    var remaining_payments = parseFloat($('.rem-dp').val() || 1);
-    var dp_balance = parseFloat($('.dp-bal').val() || 0);
+    var remaining_payments = parseFloat($('.rem-dp').val().replace(/,/g, '') || 1);
+    var dp_balance = parseFloat($('.dp-bal').val().replace(/,/g, '') || 0);
 
     var monthly_down = dp_balance / remaining_payments || 0;
-    $("#monthly_down").val(monthly_down.toFixed(2));
-    auto_terms();
+    $("#monthly_down").val(monthly_down.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    auto_no_terms();
 }
 
-function auto_terms() {
-    var start_date = new Date($('.first-dp-date').val() || Date.now());
+function auto_no_terms() {
+    var start_date = new Date($('.first-down-date').val() || Date.now());
     var terms = parseInt($('.rem-dp').val() || 1) - 1;
 
     start_date.setMonth(start_date.getMonth() + terms);
-    $('#full_down_date').val(start_date.toISOString().slice(0, 10));
+    $('#fd_date').val(start_date.toISOString().slice(0, 10));
 
     var next_month = new Date(start_date);
     next_month.setMonth(next_month.getMonth() + 1);
     $('#start_date').val(next_month.toISOString().slice(0, 10));
 }
 
-// Principal adjustment computation
-function compute_adj_prin() {
-    var balance = parseFloat($('.amt-to-be-financed').val() || 0);
-    var acc_sur = parseFloat($('.acc-surcharge2').val() || 0);
-    var acc_int = parseFloat($('.acc-interest').val() || 0);
-    var terms = parseInt($('.term-days').val() || 0);
-    var rate = parseFloat($('.interest-rate').val() || 0) / 1200;
+	
+function compute_adjustment_prin(){
+    var balance = $('.amt-to-be-financed').val() || 0;
+    var acc_sur = $('.acc-surcharge2').val() || 0;
+    var acc_int = $('.acc-interest').val() || 0;
 
-    var total_balance = balance + acc_sur + acc_int;
-    $("#adj_prin_bal").val(total_balance);
+    total =  parseFloat(balance.replace(/,/g, '')) +  parseFloat(acc_sur.replace(/,/g, '')) +  parseFloat(acc_int.replace(/,/g, ''));
 
-    var ma = (rate === 0 || terms === 0) ? 0 : total_balance * (rate / (1 - Math.pow(1 + rate, -terms)));
-    $("#monthly_amortization").val(ma.toFixed(2));
+    $("#adj_prin_bal").val(total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+	compute_ma();
+  
+  }
+
+
+function compute_ma(){
+    var rate = parseFloat($('.int-rate').val().replace(/,/g, '') / 1200 || 0) ;
+    var terms = parseInt($('.ma-terms').val().replace(/,/g, '') || 0);
+    var type = $('.pay-type2').val();
+    var adj_balance = parseFloat($('.adj-prin-bal').val().replace(/,/g, '') || 0);
+
+
+
+    if (type === "Deferred Cash Payment" ) {
+        if (terms == 0){
+            $("#mo_amort").val(0);
+        }
+        var total = adj_balance/terms;
+        $("#mo_amort").val(total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
+    }else{
+        var total = (rate === 0 || terms === 0 || !isFinite(rate) || !isFinite(terms)) ? 0 : adj_balance / (rate / (1 - Math.pow(1 + rate, -terms)));
+
+        var rate_factor = rate / (1 - Math.pow(1 + rate, -terms));
+       
+        if (total == 0 || !isFinite(total) ){
+            $("#fxd_factor").val(0.00);
+            $("#mo_amort").val(0.00);
+        }else{
+            let fxd_factor = (adj_balance / total);
+            fxd_factor = parseFloat(fxd_factor);
+            $("#fxd_factor").val(fxd_factor.toFixed(8));
+            let gtotal = adj_balance * fxd_factor;
+
+            // Round off to the nearest integer
+            gtotal = Math.round(gtotal);
+            $("#mo_amort").val(gtotal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+         }
+
+    }
+
 }
+
+
+
 
 // Payment type 1 change handler
 function payment_type1_changed() {
@@ -648,7 +696,7 @@ function payment_type1_changed() {
     } else {
         reset_payment_form();
     }
-    compute_adj_prin();
+    compute_ma();
 }
 
 function payment_type2_changed() {
@@ -656,7 +704,7 @@ function payment_type2_changed() {
     var accountStatus = $('.acc-status').val();
 
     $('#loan_text').text("Amount to be financed :");
-    $('#interest_rate, #fixed_factor, #rate_text, #factor_text, #monthly_frm').show();
+    $('#int_rate, #fxd_factor, #rate_text, #factor_text, #monthly_frm').show();
     $('#ma_text').text("Monthly Amortization");
 
     // Adjust account status for specific conditions
@@ -671,14 +719,14 @@ function payment_type2_changed() {
             $('.acc-status').val("Deferred Cash Payment");
         }
         $('#loan_text').text("Deferred Amount:");
-        $("#interest_rate, #fixed_factor").val(0).hide();
+        $("#int_rate, #fxd_factor").val(0).hide();
         $('#rate_text, #factor_text').hide();
     } else {
         // Reset to default view for other payment types
-        $('#rate_text, #factor_text, #interest_rate, #fixed_factor').show();
+        $('#rate_text, #factor_text, #int_rate, #fxd_factor').show();
     }
 
-    compute_adj_prin();
+    compute_ma();
 }
 
 
@@ -687,14 +735,14 @@ function adjust_for_down_payment(type) {
     $('.acc-status').val("Reservation");
 
     if (type === "Full DownPayment") {
-        $('#net_dp, #less_paymt_dte, #dp_bal, #monthly_down, #full_down_date').show();
+        $('#net_dp, #less_paymt_dte, #dp_bal, #monthly_down, #fd_date').show();
     } else {
         $('#down_frm').hide();
     }
 }
 
 function reset_payment_form() {
-    $('#net_dp, #less_paymt_dte, #dp_bal, #monthly_down, #first_dp_date, #full_down_date').show();
+    $('#net_dp, #less_paymt_dte, #dp_bal, #monthly_down, #first_down_date, #fd_date').show();
 }
 
 // Form validation and submission
