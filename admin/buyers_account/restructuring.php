@@ -118,8 +118,12 @@ if ($result) {
 } else {
     echo "Error: " . odbc_errormsg($conn2);
 }
-
-$remain_terms = $terms - $status_count;  // Assuming $terms is defined elsewhere in your code
+if ($account_status == 'Monthly Amortization' || $account_status == 'Deferred Cash Payment'){
+    $remain_terms = $terms - $status_count; 
+}
+if  ($account_status == 'Partial DownPayment' ){
+    $remain_no_pay = $no_payments - $status_count; 
+}
 
 odbc_close($conn2);
 ?>
@@ -497,7 +501,20 @@ input{
                 <input type="text" class="form-control margin-bottom required dp-bal" name="dp_bal" id="dp_bal" value="<?php echo isset($net_dp) ? number_format($net_dp,2) : 0; ?>" readonly>
                 <label for="acc_surcharge1" class="control-label" >Accrued Surcharge: </label>
                 <input type="text" class="form-control margin-bottom required acc-surcharge1" name="acc_surcharge1" id="acc_surcharge1" value="0">
-                <label for= "rem_dp" class="control-label">Rem. DP Term/s : </label>
+                <!--  <label for= "rem_dp" class="control-label">Rem. DP Term/s : </label> -->
+               
+                <?php if ($account_status == 'Partial DownPayment' )  : ?>
+                <label class="control-label">Rem. DP Term/s : </label> <i> Remaining: <?php echo $no_payments = $remain_no_pay;  ?> </i>
+                <?php else:?>
+                <label class="control-label">Rem. DP Term/s : <?php echo $no_payments ?></label>
+                <?php endif; ?>
+
+                <?php
+                // Ensure $monthly_down is computed based on $net_dp and $no_payments
+                $monthly_down = isset($net_dp) && isset($no_payments) && $no_payments > 0 ? $net_dp / $no_payments : 0;
+
+                // Display the HTML with the calculated value
+                ?>
                 <input type="text" class="form-control margin-bottom required rem-dp" name="rem_dp" id="rem_dp" value="<?php echo isset($no_payments) ? $no_payments : 0; ?>" maxlength= "2">
                 <label for= "monthly_down" class="control-label" id ="mo_down_text">Monthly Down: </label>
                 <input type="text" class="form-control margin-bottom required monthly-down" name="monthly_down" id="monthly_down" value="<?php echo isset($monthly_down) ? number_format($monthly_down,2) : 0; ?>"  >
@@ -531,7 +548,7 @@ input{
                 <label for='int_rate' class="control-label" id='rate_text'>Interest Rate: </label>
                 <input type="text" class="form-control margin-bottom required int-rate" name="int_rate" id="int_rate" value="<?php echo isset($interest_rate) ? $interest_rate : 0; ?>">
                 <label for='fxd_factor' class="control-label" id='factor_text' >Fixed Factor: </label>
-                <input type="text" class="form-control margin-bottom required fixed-factor" name="fxd_factor" id="fxd_factor" value="<?php echo isset($fixed_factor) ? $fixed_factor : 0; ?>" readonly>
+                <input type="text" class="form-control margin-bottom required fixed-factor" name="fxd_factor" id="fxd_factor" value="<?php echo isset($fixed_factor) ? number_format($fixed_factor,8) : 0; ?>" readonly>
                 <label class="control-label">Monthly Payment: </label>
                 <input type="text" class="form-control margin-bottom required monthly-amor" name="mo_amort" id="mo_amort" value="<?php echo isset($monthly_payment) ? number_format($monthly_payment,2) : 0; ?> "readonly>	
             </div>
@@ -574,13 +591,27 @@ var balance = <?php echo $balance; ?>;
 
 // Event listeners for dynamic updates
 $(document).on('change', ".acc-interest, .acc-surcharge2, .ma-terms, .adj-prin-bal, .int-rate", function () {
+
+    $(".acc-interest, .acc-surcharge2").each(function() {
+        var value = parseFloat($(this).val().replace(/,/g, ''));  // Remove commas for calculation
+        if (!isNaN(value)) {
+            $(this).val(value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+        }
+    });
+
     compute_adjustment_prin();
     compute_ma();
 
 });
 
 $(document).on('change', ".less-paymt-date, .acc-surcharge1", function () {
-    //update_down_payment_balance();
+    
+   
+    var value = parseFloat($(this).val().replace(/,/g, ''));  // Remove commas for calculation
+    if (!isNaN(value)) {
+        $(this).val(value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+    }
+  
     mo_downpayment();
     auto_no_terms();
 });
@@ -767,7 +798,6 @@ $('#restructuring').submit(function (e) {
         alert_toast("Please complete all required fields!", "warning");
         return;
     }
-
     start_loader();
     $.ajax({
         url: _base_url_ + "classes/New_Master.php?f=create_restructured",

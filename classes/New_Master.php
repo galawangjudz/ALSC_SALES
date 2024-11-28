@@ -204,5 +204,9 @@ switch ($action) {
         break;
 
 
+    case 'create_restructured':
+        echo $Master->create_restructured();
+        break;
+
 
 }
