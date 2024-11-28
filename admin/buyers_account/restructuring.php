@@ -18,6 +18,8 @@ if (!$conn) {
 // Get account number from the URL
 $l_find = isset($_GET['acc']) ? $_GET['acc'] : '';
 
+$l_find = '15200202102';
+
 // Prepare SQL query
 $l_sql = "SELECT * FROM t_buyers_account WHERE c_account_no = ?";
 $l_qry = odbc_prepare($conn, $l_sql);
@@ -65,7 +67,24 @@ if ($row === false) {
     // Other details
     $reservation = $row['c_reservation'];
     $payment_type1 = $row['c_payment_type1'];
+    $payment_type_map1 = [
+        'PD' => 'Partial DownPayment',
+        'SC' => 'Spot Cash',
+        'ND' => 'No DownPayment',
+        'FD' => 'Full Down Payment',
+    ];
+    
+    $payment_type1 = $row['c_payment_type1'];
+    $payment_type1 = isset($payment_type_map[$payment_type1]) ? $payment_type_map1[$payment_type1] : '';
+
     $payment_type2 = $row['c_payment_type2'];
+    $payment_type_map2 = [
+        'DFC' => 'Deferred Cash Payment',
+        'MA' => 'Monthly Amortization',
+    ];
+
+    $payment_type2 = $row['c_payment_type2'];
+    $payment_type2 = isset($payment_type_map2[$payment_type2]) ? $payment_type_map2[$payment_type2] : '';
 
     // Financing & Payments
     $amt_fnanced = $row['c_amt_financed'];
@@ -530,391 +549,201 @@ input{
 
 </body>
 <script>
+$(document).ready(function () {
 
-$(document).ready(function() {
+// Initial setup based on payment types
+<?php if ($payment_type2 == 'Deferred Cash Payment'): ?>
+    $("#interest_rate, #fixed_factor, #rate_text, #factor_text").val(0).hide();
+<?php endif; ?>
 
-    <?php if ($payment_type2 == 'Deferred Cash Payment' ):?>
-        $("#interest_rate").val(0);
-        $("#fixed_factor").val(0);
-        $('#interest_rate').hide();
-        $('#rate_text').hide();
-        $('#factor_text').hide();
-        $('#fixed_factor').hide();
-    <?php endif; ?> 
-
-
-    <?php if (($account_status == 'Monthly Amortization') || ($account_status == 'Full DownPayment') || ($account_status == 'No DownPayment') ): ?>
-        $('#down_frm').hide();
-        $('#net_dp').hide();
-        $('#less_paymt_dte').hide();
-        $('#dp_bal').hide();
-        $('#acc_surcharge1').hide();
-        $('#no_payment').hide();
-        $('#monthly_down').hide();
-        $('#first_dp_date').hide();
-        $('#full_down_date').hide();
-        
-        $('#p1').hide();
-        $('#p1').hide();
-        $('#p1_box').hide();
-        $('#p2_box').width('65%');
-        $('#p2').width('65%');
-      <?php elseif ($account_status == 'Deferred Cash Payment' ):?>
-            $('#down_frm').hide();
-            $('#net_dp').hide();
-            $('#less_paymt_dte').hide();
-            $('#dp_bal').hide();
-            $('#acc_surcharge1').hide();
-            $('#no_payment').hide();
-            $('#monthly_down').hide();
-            $('#first_dp_date').hide();
-            $('#full_down_date').hide();
-            $('#p1').hide();
-            $('#p1').hide();
-            $('#p1_box').hide();
-            $('#p2_box').width('65%');
-            $('#p2').width('65%');
-            $("#interest_rate").val(0);
-            $("#fixed_factor").val(0);
-            $('#interest_rate').hide();
-            $('#fixed_factor').hide();
-            $('#rate_text').hide();
-            $('#factor_text').hide();
-        
-
-      <?php else: ?>
-          $('#down_frm').show();
-     
-    <?php endif; ?>
-
-    var balance = <?php echo $balance; ?>; 
-    <?php if ($account_status == 'Monthly Amortization' || $account_status == 'Full DownPayment' || $account_status == 'Deferred Cash Payment'): ?>
-      
-          $('#amt_to_be_financed').val(balance); 
-          $('#adj_prin_bal').val(balance); 
-    <?php endif; ?>
-
-});
-
-
-$(document).on('change', ".acc-interest", function(e) {
-    e.preventDefault();
-    compute_adj_prin();
-
-
-});
-
-$(document).on('change', ".less-paymt-date", function(e) {
-    e.preventDefault();
-    var net_dp = $('.net-dp').val();
-    var less = $('.less-paymt-date').val();
-    var acc_sur1 = $('.acc-surcharge1').val();
-    dp_bal =  parseFloat(net_dp) -  parseFloat(less) ;
-    total_dp_bal = dp_bal + parseFloat(acc_sur1);
-
-    $("#dp_bal").val(total_dp_bal);
-
-    compute_rem_dp();
-});
-
-
-$(document).on('change', ".rem-dp", function(e) {
-	e.preventDefault();
-    compute_rem_dp();
-});
-
-$(document).on('change', ".first-dp-date", function(e) {
-    e.preventDefault();
-    auto_terms();
-
-
-});
-
-$(document).on('change', ".acc-surcharge1", function(e) {
-    e.preventDefault();
-    var net_dp = $('.net-dp').val();
-    var less = $('.less-paymt-date').val();
-    var acc_sur1 = $('.acc-surcharge1').val();
-    dp_bal =  parseFloat(net_dp) -  parseFloat(less) ;
-    total_dp_bal = dp_bal + parseFloat(acc_sur1);
-
-    $("#dp_bal").val(total_dp_bal);
-    compute_rem_dp();
-});
-
-
-$(document).on('change', ".acc-surcharge2", function(e) {
-    e.preventDefault();
-    compute_adj_prin();
-});
-
-$(document).on('change', ".term-days", function(e) {
-    e.preventDefault();
-    compute_adj_prin();
-});
-
-$(document).on('change', ".adj-prin-bal", function(e) {
-    e.preventDefault();
-    compute_adj_prin();
-});
-
-$(document).on('change', ".interest-rate", function(e) {
-    e.preventDefault();
-    compute_adj_prin();
-});
-
-$(document).on('change', ".pay-type2", function(e) {
-    e.preventDefault();
-    payment_type2_changed();
-});
-
-$(document).on('change', ".pay-type1", function(e) {
-    e.preventDefault();
-    payment_type1_changed();
-});
-
-function payment_type1_changed(){
-    var l_payment_type1 = $('.pay-type1').val();
-    $('#loan_text').text("Amount to be financed :");
+<?php if (in_array($account_status, ['Monthly Amortization', 'Full DownPayment', 'No DownPayment'])): ?>
+    $('#down_frm, #net_dp, #less_paymt_dte, #dp_bal, #acc_surcharge1, #no_payment, #monthly_down, #first_dp_date, #full_down_date, #p1, #p1_box').hide();
+    $('#p2_box, #p2').width('65%');
+<?php elseif ($account_status == 'Deferred Cash Payment'): ?>
+    $('#down_frm, #net_dp, #less_paymt_dte, #dp_bal, #acc_surcharge1, #no_payment, #monthly_down, #first_dp_date, #full_down_date, #p1, #p1_box').hide();
+    $('#p2_box, #p2').width('65%');
+    $("#interest_rate, #fixed_factor, #rate_text, #factor_text").val(0).hide();
+<?php else: ?>
     $('#down_frm').show();
-    $('#monthly_frm').show();
-    $('#ma_text').text("Monthly Amortization ");
-    var balance = <?php echo $amt_fnanced; ?>; 
-    $('#amt_to_be_financed').val(balance); 
-    $('#adj_prin_bal').val(balance); 
-    if (l_payment_type1 == "Full DownPayment"){
-        if (acc_stat != 'Monthly Amortization' || acc_stat != 'Deferred Cash Payment'){
-            $('.acc-status').val("Reservation");
-           }
-          $('#no_payment').val(1);
-          $('#no_payment').hide();
-          net_dp_ent = $('.net-dp').val();
-          $('#monthly_down').val(net_dp_ent);
-          $('#rem_dp').val(1);
-          $('#net_dp').show();
-          $('#less_paymt_dte').show();
-          $('#dp_bal').show();
-          $('#acc_surcharge1').show();
-          $('#no_payment').show();
-          $('#monthly_down').show();
-          $('#first_dp_date').hide();
-          $('#full_down_date').show();
-         
-    }else if (l_payment_type1 == "No DownPayment"){
-          if (acc_stat != 'Monthly Amortization' || acc_stat != 'Deferred Cash Payment'){
-              $('.acc-status').val("Reservation");
-          }
-          var balance = <?php echo $balance; ?>; 
-          $('#amt_to_be_financed').val(balance); 
-          $('#adj_prin_bal').val(balance); 
-          $('#no_payment').val(1);
-          $('#down_frm').hide();
-      
-    }else{
-      if (acc_stat != 'Monthly Amortization' || acc_stat != 'Deferred Cash Payment'){
-              $('.acc-status').val("Reservation");
-      }
-      $('#net_dp').show();
-      $('#less_paymt_dte').show();
-      $('#dp_bal').show();
-      $('#acc_surcharge1').show();
-      $('#no_payment').show();
-      $('#monthly_down').show();
-      $('#first_dp_date').show();
-      $('#full_down_date').show();
-    
+<?php endif; ?>
+
+// Set balance values
+var balance = <?php echo $balance; ?>;
+<?php if (in_array($account_status, ['Monthly Amortization', 'Full DownPayment', 'Deferred Cash Payment'])): ?>
+    $('#amt_to_be_financed, #adj_prin_bal').val(balance);
+<?php endif; ?>
+
+// Event listeners for dynamic updates
+$(document).on('change', ".acc-interest, .acc-surcharge2, .term-days, .adj-prin-bal, .interest-rate", function () {
+    compute_adj_prin();
+});
+
+$(document).on('change', ".less-paymt-date, .acc-surcharge1", function () {
+    update_down_payment_balance();
+});
+
+$(document).on('change', ".rem-dp, .first-dp-date", function () {
+    compute_rem_dp();
+    auto_terms();
+});
+
+$(document).on('change', ".pay-type2", payment_type2_changed);
+$(document).on('change', ".pay-type1", payment_type1_changed);
+
+// Down payment calculations
+function update_down_payment_balance() {
+    var net_dp = parseFloat($('.net-dp').val() || 0);
+    var less = parseFloat($('.less-paymt-date').val() || 0);
+    var acc_sur1 = parseFloat($('.acc-surcharge1').val() || 0);
+
+    var dp_bal = net_dp - less;
+    var total_dp_bal = dp_bal + acc_sur1;
+
+    $("#dp_bal").val(total_dp_bal);
+    compute_rem_dp();
+}
+
+function compute_rem_dp() {
+    var remaining_payments = parseFloat($('.rem-dp').val() || 1);
+    var dp_balance = parseFloat($('.dp-bal').val() || 0);
+
+    var monthly_down = dp_balance / remaining_payments || 0;
+    $("#monthly_down").val(monthly_down.toFixed(2));
+    auto_terms();
+}
+
+function auto_terms() {
+    var start_date = new Date($('.first-dp-date').val() || Date.now());
+    var terms = parseInt($('.rem-dp').val() || 1) - 1;
+
+    start_date.setMonth(start_date.getMonth() + terms);
+    $('#full_down_date').val(start_date.toISOString().slice(0, 10));
+
+    var next_month = new Date(start_date);
+    next_month.setMonth(next_month.getMonth() + 1);
+    $('#start_date').val(next_month.toISOString().slice(0, 10));
+}
+
+// Principal adjustment computation
+function compute_adj_prin() {
+    var balance = parseFloat($('.amt-to-be-financed').val() || 0);
+    var acc_sur = parseFloat($('.acc-surcharge2').val() || 0);
+    var acc_int = parseFloat($('.acc-interest').val() || 0);
+    var terms = parseInt($('.term-days').val() || 0);
+    var rate = parseFloat($('.interest-rate').val() || 0) / 1200;
+
+    var total_balance = balance + acc_sur + acc_int;
+    $("#adj_prin_bal").val(total_balance);
+
+    var ma = (rate === 0 || terms === 0) ? 0 : total_balance * (rate / (1 - Math.pow(1 + rate, -terms)));
+    $("#monthly_amortization").val(ma.toFixed(2));
+}
+
+// Payment type 1 change handler
+function payment_type1_changed() {
+    var type = $('.pay-type1').val();
+
+    if (type === "Full DownPayment" || type === "No DownPayment") {
+        adjust_for_down_payment(type);
+    } else {
+        reset_payment_form();
     }
+    compute_adj_prin();
+}
 
-		compute_adj_prin();
+function payment_type2_changed() {
+    var paymentType2 = $('.pay-type2').val();
+    var accountStatus = $('.acc-status').val();
 
-	}
-
-function payment_type2_changed(){
-    var l_payment_type2 = $('.pay-type2').val();
-    var acc_stat = $('.acc-status').val();
     $('#loan_text').text("Amount to be financed :");
-    $('#interest_rate').show();
-    $('#fixed_factor').show();
-    $('#monthly_frm').show();
-    $('#rate_text').show()
-    $('#factor_text').show()
-    $('#ma_text').text("Monthly Amortization ");
-    if (acc_stat == 'Monthly Amortization' || acc_stat == 'Deferred Cash Payment'){
-          $('.acc-status').val("Monthly Amortization");
-    }
-		if (l_payment_type2 == "Deferred Cash Payment"){
-          $('#ma_text').text("Deferred Cash Payment ");
-          if (acc_stat == 'Monthly Amortization' || acc_stat == 'Deferred Cash Payment'){
-              $('.acc-status').val("Deferred Cash Payment");
-          }
-          $('#loan_text').text("Deferred Amount:");
-          $("#interest_rate").val(0);
-          $("#fixed_factor").val(0);
+    $('#interest_rate, #fixed_factor, #rate_text, #factor_text, #monthly_frm').show();
+    $('#ma_text').text("Monthly Amortization");
 
-          $('#rate_text').hide();
-          $('#interest_rate').hide();
-          $('#factor_text').hide();
-          $('#fixed_factor').hide();
-		}else{
-          $('#rate_text').show();
-          $('#factor_text').show();
-          $('#interest_rate').show();
-          $('#fixed_factor').show();
+    // Adjust account status for specific conditions
+    if (['Monthly Amortization', 'Deferred Cash Payment'].includes(accountStatus)) {
+        $('.acc-status').val("Monthly Amortization");
     }
 
-		compute_adj_prin();
-
-	}
-
-function compute_rem_dp(){
-		var l_no_pay = $('.rem-dp').val();
-		var l_net_dp = $('.dp-bal').val();
-
-		var l_mo_down = parseFloat(l_net_dp) / parseFloat(l_no_pay);
-		l_mo_down = isFinite(l_mo_down) ? l_mo_down : 0.0;
-		//alert(l_mo_down);
-		$("#monthly_down").val(l_mo_down.toFixed(2));		
-		auto_terms();
-	}
-
-function auto_terms(){
-		var l_no_pay = $('.rem-dp').val();
-		var l_start_date = $('.first-dp-date').val();
-	
-		fd_dte = new Date(l_start_date);
-		if(l_no_pay == 0){
-			l_no_pay = 1
-		}
-		fd_dte.setMonth(fd_dte.getMonth()+ parseFloat(l_no_pay - 1));
-		
-		var fd_dte = fd_dte.toISOString().slice(0, 10);
- 
-		$('#full_down_date').val(fd_dte);
-
-
-		var l_fd_dte = $('.full-down-date').val();
-
-		start_dte = new Date(l_fd_dte);
-
-		start_dte.setMonth(start_dte.getMonth()+ 1);
-		
-		var start_dte = start_dte.toISOString().slice(0, 10);
-
-		$('#start_date').val(start_dte);
-		//alert(end_dte);
-		
-
-	}
-
-function compute_adj_prin(){
-    var balance = $('.amt-to-be-financed').val();
-    var acc_sur = $('.acc-surcharge2').val();
-    var acc_int = $('.acc-interest').val();
-    var l_terms = $('.term-days').val();
-    let acc_stat = $('.acc-status').val();
-    let p2 = $('#payment_type2').val();
-    var l_rate = $('.interest-rate').val();
-		l_x = '1200';
-		if (l_rate == 0){
-			l_rate_value = 0;
-		}else{
-			var l_rate_value = parseFloat(l_rate)/ parseFloat(l_x);
-		}
-
-    total =  parseFloat(balance) +  parseFloat(acc_sur) +  parseFloat(acc_int);
-
-    $("#adj_prin_bal").val(total);
-    if (p2 == "Deferred Cash Payment")
-      { 
-        if (l_terms == 0){
-          $("#monthly_amortization").val(0);
+    // Handle "Deferred Cash Payment" logic
+    if (paymentType2 === "Deferred Cash Payment") {
+        $('#ma_text').text("Deferred Cash Payment");
+        if (['Monthly Amortization', 'Deferred Cash Payment'].includes(accountStatus)) {
+            $('.acc-status').val("Deferred Cash Payment");
         }
-        ma = total / l_terms;
-
-        $("#monthly_amortization").val(ma);
-
-    }else{
-    var l_factor = parseFloat(l_rate_value)/(1-(1+parseFloat(l_rate_value))**(-parseFloat(l_terms)));
-
-    if (l_factor == 0){
-      return
+        $('#loan_text').text("Deferred Amount:");
+        $("#interest_rate, #fixed_factor").val(0).hide();
+        $('#rate_text, #factor_text').hide();
+    } else {
+        // Reset to default view for other payment types
+        $('#rate_text, #factor_text, #interest_rate, #fixed_factor').show();
     }
 
-    l_factor = isNaN(l_factor) ? 0 : l_factor;
-  
-    var monthly_ma = parseFloat(total)*parseFloat(l_factor);
-    monthly_ma = isFinite(monthly_ma) ? monthly_ma : 0;
-    $("#fixed_factor").val(l_factor.toFixed(8));
-    $("#monthly_amortization").val(monthly_ma.toFixed(2));
-  }
-  }
-
-
-  function validateForm() {
-	    // error handling
-	    var errorCounter = 0;
-
-	    $(".required").each(function(i, obj) {
-
-	        if($(this).val() === ''){
-	            $(this).parent().addClass("has-error");
-	            errorCounter++;
-	        } else{ 
-	            $(this).parent().removeClass("has-error"); 
-	        }
-
-	    });
-		
-	    return errorCounter;
-
-	}
-
-    $(document).ready(function(){
-
-      $('#restructuring').submit(function(e){
-			e.preventDefault();
-            var _this = $(this)
-		 	$('.err-msg').remove();
-			
-             var errorCounter = validateForm();
-             if (errorCounter > 0) {
-                alert_toast("It appear's you have forgotten to complete something!","warning");	  
-                return false;
-            }else{
-                $(".required").parent().removeClass("has-error")
-            }    
-            start_loader();
-			$.ajax({
-				url:_base_url_+"classes/New_Master.php?f=create_restructured",
-				data: new FormData($(this)[0]),
-                cache: false,
-                contentType: false,
-                processData: false,
-                method: 'POST',
-                type: 'POST',
-                dataType: 'json',
-				error:err=>{
-					console.log(err)
-					alert_toast("An error occured",'error');
-					end_loader();
-				},
-				success:function(resp){
-					if(typeof resp =='object' && resp.status == 'success'){
-              location.reload();
-              end_loader();
-          }else{
-						alert_toast("An error occured",'error');
-						end_loader();
-            console.log(resp)
-					}
-				}
-			})
-		})
-        
-	})
+    compute_adj_prin();
+}
 
 
 
+function adjust_for_down_payment(type) {
+    $('.acc-status').val("Reservation");
 
+    if (type === "Full DownPayment") {
+        $('#net_dp, #less_paymt_dte, #dp_bal, #monthly_down, #full_down_date').show();
+    } else {
+        $('#down_frm').hide();
+    }
+}
 
+function reset_payment_form() {
+    $('#net_dp, #less_paymt_dte, #dp_bal, #monthly_down, #first_dp_date, #full_down_date').show();
+}
+
+// Form validation and submission
+function validateForm() {
+    var errorCounter = 0;
+
+    $(".required").each(function () {
+        if ($(this).val() === '') {
+            $(this).parent().addClass("has-error");
+            errorCounter++;
+        } else {
+            $(this).parent().removeClass("has-error");
+        }
+    });
+    return errorCounter;
+}
+
+$('#restructuring').submit(function (e) {
+    e.preventDefault();
+
+    if (validateForm() > 0) {
+        alert_toast("Please complete all required fields!", "warning");
+        return;
+    }
+
+    start_loader();
+    $.ajax({
+        url: _base_url_ + "classes/New_Master.php?f=create_restructured",
+        data: new FormData($(this)[0]),
+        cache: false,
+        contentType: false,
+        processData: false,
+        method: 'POST',
+        dataType: 'json',
+        success: function (resp) {
+            if (resp.status === 'success') {
+                location.reload();
+            } else {
+                alert_toast("An error occurred", 'error');
+            }
+            end_loader();
+        },
+        error: function (err) {
+            console.log(err);
+            alert_toast("An error occurred", 'error');
+            end_loader();
+        }
+    });
+});
+
+});
 </script>
