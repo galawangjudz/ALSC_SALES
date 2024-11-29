@@ -78,7 +78,7 @@
                             <td><label class="control-label" id='rate_text'>Interest Rate:</label></td>
                             <td><input type="text" class="form-control margin-bottom required interest-rate" name="interest_rate" id="interest_rate" value="<?= $row['c_interest_rate'] ?>" readonly></td>
                             <td><label class="control-label" id='factor_text'>Fixed Factor:</label></td>
-                            <td><input type="text" class="form-control margin-bottom required fixed-factor" name="fixed_factor" id="fixed_factor" value="<?= $row['c_fixed_factor'] ?>" readonly></td>
+                            <td><input type="text" class="form-control margin-bottom required fixed-factor" name="fixed_factor" id="fixed_factor" value="<?= number_format($row['c_fixed_factor'],8) ?>" readonly></td>
                         </tr>
                         <!-- Eighth Row -->
                         <tr>

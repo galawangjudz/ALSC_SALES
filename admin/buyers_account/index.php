@@ -376,6 +376,10 @@ $(document).ready(function() {
     $('.account_rest').click(function(){
 		uni_modal("Account Restructuring","buyers_account/restructuring.php?acc="+$(this).attr('data-acc'),'mid-large')
 	});
+   /*  $('.account_rest').click(function() {
+    
+        window.location.href = "./?page=buyers_account/restructuring";
+    }); */
 
     $('.billing_remark').click(function(){
 		uni_modal("Billing Remarks Window","buyers_account/billing_remarks.php?acc="+$(this).attr('data-acc'),'mid-large')
