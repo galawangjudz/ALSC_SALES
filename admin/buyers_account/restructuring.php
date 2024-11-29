@@ -300,9 +300,9 @@ odbc_close($conn2);
             
             <select name="payment_type1" id="payment_type1" class="form-control required pay-type1" tabindex = "2">
             <?php if ($account_status == 'Monthly Amortization'): ?>
-                <option name="payment_type1" value="Partial DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?> disabled style="background-color: gainsboro; color: black;">Partial DownPayment</option>
-                <option name="payment_type1" value="Full DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?> disabled style="background-color: gainsboro; color: black;">Full DownPayment</option>
-                <option name="payment_type1" value="No DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?> disabled style="background-color: gainsboro; color: black;">No DownPayment</option>
+                <option name="payment_type1" value="Partial DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?> style="background-color: gainsboro; color: black;">Partial DownPayment</option>
+                <option name="payment_type1" value="Full DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?> style="background-color: gainsboro; color: black;">Full DownPayment</option>
+                <option name="payment_type1" value="No DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?>style="background-color: gainsboro; color: black;">No DownPayment</option>
               <?php elseif ($account_status == 'Reservation'): ?>
                 <option name="payment_type1" value="Partial DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?>>Partial DownPayment</option>
                 <option name="payment_type1" value="Full DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?>>Full DownPayment</option>
@@ -367,7 +367,7 @@ odbc_close($conn2);
 
                 // Display the HTML with the calculated value
                 ?>
-                <input type="text" class="form-control margin-bottom required rem-dp" name="rem_dp" id="rem_dp" value="<?php echo isset($no_payments) ? $no_payments : 0; ?>" maxlength= "2">
+                <input type="text" class="form-control margin-bottom required rem-dp" name="rem_dp" id="rem_dp" value="<?php echo isset($no_payments) ? $no_payments : 1; ?>" maxlength= "2">
                 <label for= "monthly_down" class="control-label" id ="mo_down_text">Monthly Down: </label>
                 <input type="text" class="form-control margin-bottom required monthly-down" name="monthly_down" id="monthly_down" value="<?php echo isset($monthly_down) ? number_format($monthly_down,2) : 0; ?>"  >
                 <label class="control-label">Commencing: </label>
@@ -382,7 +382,7 @@ odbc_close($conn2);
     <div class="payment_box2" id="p2">	
         <div class="col-md-12">
              <label class="control-label" id ="amt_tobe_financed_text" >Amount to be Financed:</label>
-             <input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_to_be_financed" id="amt_2b_financed" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>"readonly>
+             <input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_2be_financed" id="amt_2be_financed" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>"readonly>
              <label class="control-label" id="acc_int_text">Acc. Interest:</label>
              <input type="text" class="form-control margin-bottom required acc-interest" name="acc_interest" id="acc_interest" value="0">
              <label class="control-label"  id="acc_sur_text" >Acc. Surcharge:</label>
@@ -438,7 +438,7 @@ $(document).ready(function () {
 var balance = <?php echo $balance; ?>;
 <?php if (in_array($account_status, ['Monthly Amortization', 'Full DownPayment', 'Deferred Cash Payment'])): ?>
     var balance = <?php echo $balance; ?>;
-    $('#amt_to_be_financed, #adj_prin_bal').val(balance);
+    $('#amt_2be_financed, #adj_prin_bal').val(balance);
 <?php endif; ?>
 
 // Event listeners for dynamic updates
@@ -659,17 +659,28 @@ $('#restructuring').submit(function (e) {
         processData: false,
         method: 'POST',
         dataType: 'json',
-        success: function (resp) {
-            if (resp.status === 'success') {
-                location.reload();
-            } else {
-                alert_toast("An error occurred", 'error');
-            }
+        error: err => {
+            console.log(err);
+            alert("An error occurred", 'error');
             end_loader();
         },
-        error: function (err) {
-            console.log(err);
-            alert_toast("An error occurred", 'error');
+        success: function(resp){
+            if (resp.status == 'success'){
+                alert_toast(resp.msg, 'success');
+                setTimeout(function() {
+                    location.reload();
+                }, 2000);
+            } else if (!!resp.msg){
+                el.addClass("alert-danger");
+                el.text(resp.msg);
+                _this.prepend(el);
+            } else {
+                el.addClass("alert-danger");
+                el.text("An error occurred due to unknown reason.");
+                _this.prepend(el);
+            }
+            el.show('slow');
+            $('html, body, .modal').animate({scrollTop:0}, 'fast');
             end_loader();
         }
     });
