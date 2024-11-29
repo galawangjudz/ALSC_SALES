@@ -131,9 +131,6 @@ odbc_close($conn2);
 
 
 <style>
-#item-list th, #item-list td{
-	padding:5px 3px!important;
-}
 
 .container-fluid p{
     margin: unset
@@ -170,51 +167,8 @@ odbc_close($conn2);
 .has-error .form-control-feedback {
     color: #a94442
 }
-/* Style the tab */
-.tab {
-  overflow: hidden;
-  border: 1px solid #ccc;
-  background-color: #f1f1f1;
-  font-weight:bold;
-}
-/* Style the buttons that are used to open the tab content */
-.tab button {
-  background-color: inherit;
-  float: left;
-  border: none;
-  outline: none;
-  cursor: pointer;
-  padding: 14px 16px;
-  transition: 0.3s;
-}
 
-/* Change background color of buttons on hover */
-.tab button:hover {
-  background-color: #ddd;
-}
 
-/* Create an active/current tablink class */
-.tab button.active {
-  background-color: #ccc;
-}
-
-/* Style the tab content */
-.tabcontent {
-  display: none;
-  padding: 6px 12px;
-  border: 1px solid #ccc;
-  border-top: none;
-}
-.lot_box{
-  width:49%;
-  height:auto;
-  float:left;
-  border: solid #36454F 1px;
-  padding-left:15px;
-  padding-right:15px;
-  padding-bottom:15px;
-  border-radius:5px;
-}
 .payment_box{
   width:49%;
   height:auto;
@@ -238,28 +192,8 @@ odbc_close($conn2);
   border-radius:5px;
   margin-left:2%;
 }
-.add_cost_box{
-  width:100%;
-  height:auto;
-  float:left;
-  border: solid #36454F 1px;
-  padding-left:15px;
-  padding-right:15px;
-  padding-bottom:15px;
-  border-radius:5px;
-  margin-top:15px;
-}
-.house_box{
-  width:49%;
-  height:auto;
-  float:left;
-  border: solid #36454F 1px;
-  padding-left:15px;
-  padding-right:15px;
-  padding-bottom:15px;
-  border-radius:5px;
-  margin-left:2%;
-}
+
+
 .main_box{
   float:left;
   width:100%;
@@ -271,100 +205,18 @@ odbc_close($conn2);
   padding-bottom:15px;
   border-radius:5px;
 }
-#btnfind{
-  margin-left:25px;
-  font-weight:bold;
-}
-#invoice_totals{
-  width:100%;
-  margin-left:10px;
-  margin-right:10px;
-}
+
 .space{
   float:left;
   width:100%;
   height:15px;
 }
-.hr_vertical
- {
-   background-color:#C80000;
-   color:#C80000;
-   position:absolute;
-   left:130px;
-   border:2px;
- }
- .title_comment{
-	color:black;
-	font-weight:bold;
-  font-size:20px;
-  padding-top:5px;
-  padding-bottom:15px;
-  margin-top:5px;
-}
-#txtarea_comment{
-  width:100%;
-  border-radius:5px;
-}
- .titles{
-	color:black;
-	font-weight:bold;
-	text-align:center;
-  font-size:20px;
-  padding-top:5px;
-  padding-bottom:5px;
-  margin-top:5px;
-}
-.control-label{
-  display: inline-block;
-  width: auto;
-}
-input{
-  font-size:15px!important;
-  color: black!important;
-  margin-top:-5px;
-}
-.hr_space{
-	margin-top:18px;
-	display:block;
-}
-.main-header{
-  background-color:white;
-}
-.alsc{
-  width:50px;
-  height:100px;
-  float:left;
-}
-.small{
-  float:left;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size:15px;
-  margin-left:5px;
-  color:black;
-  font-weight: 500;
-}
-#remarks{
-  width:100%;
-  margin-left:10px;
-  margin-right:10px;
-}
 
-.textarea {
-  width: 100%;
-}
 
-#invoice_notes{
-  height:125px;
-}
 
-.textarea textarea {
-  width: 100%;
-  padding: 10px;
-  resize: none;
-}
-.type-title{
-	float:left;
-}
+
+
+
 
 
 </style>
