@@ -184,6 +184,8 @@ Class Master extends DBConnection2{
         extract($_POST);
         
 
+
+
         $version_id = 2;
         // Step 1: Insert into the 'requests' table
         $request = "INSERT INTO requests (
@@ -194,7 +196,7 @@ Class Master extends DBConnection2{
             created_at
         ) 
         VALUES (
-            1,                       -- requester_id (example)
+            10093,                       -- requester_id (example)
             'Request for account restructuring', -- description (example)
             'pending',                -- status (default is 'pending' if not provided)
             'account_restructuring',  -- request_type (example)
@@ -229,9 +231,18 @@ Class Master extends DBConnection2{
       
         while ($approval = odbc_fetch_array($approvers_result)) {
             $role_id = $approval['role_id'];
-            $approver_id = $approval['role_id'];
             $approval_order = $approval['approval_order'];
 
+            // Fetch the user associated with this role
+            $user_sql = "SELECT c_employee_code 
+                FROM t_car_users 
+                WHERE id = '$role_id' 
+                LIMIT 1"; // Adjust logic for multiple users if needed
+            $user_result = odbc_exec($this->conn2, $user_sql);
+
+            if ($user = odbc_fetch_array($user_result)) {
+                $approver_id = $user['c_employee_code']; // Assign the employee_code as approver_id
+            }
          
             $approval_sql = "INSERT INTO approvals (
                 request_id,

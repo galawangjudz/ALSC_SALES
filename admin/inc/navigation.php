@@ -109,7 +109,23 @@ $department = $_settings->userdata('department');
                                         Payments
                                       </p>
                                     </a>
-                                  </li> 
+                                  </li>
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=requests" class="nav-link nav-buyers_account">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Requests
+                                      </p>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=approvals" class="nav-link nav-buyers_account">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Approvals
+                                      </p>
+                                    </a>
+                                  </li>
                                   <li class="nav-item dropdown">
                                     <a href="<?php echo base_url ?>admin/?page=buyers_account/commission_voucher/comm_voucher" class="nav-link nav-buyers_account">
                                     <i class="nav-icon fas fa-cube"></i>

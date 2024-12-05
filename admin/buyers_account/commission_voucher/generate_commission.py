@@ -14,10 +14,11 @@ def gen_comm():
     l_date1 = gmtime()  # Adjust this according to your logic
     l_print_date = "2024-09-09"
     l_count = 0
+    #, t_buyers_account.ra , t_buyers_account.cts, t_buyers_account.das
     l_sql = """
     SELECT t_commission.c_code, t_commission.c_amount, t_commission.c_account_no, t_commission.c_rate,
            t_buyers_account.c_net_tcp, t_buyers_account.c_down_percent, t_buyers_account.c_b1_first_name,
-           t_buyers_account.c_b1_last_name, t_commission.c_sale, t_buyers_account.ra , t_buyers_account.cts, t_buyers_account.das
+           t_buyers_account.c_b1_last_name, t_commission.c_sale 
     FROM t_agents
     LEFT JOIN t_commission ON t_agents.c_code = t_commission.c_code
     LEFT JOIN t_buyers_account ON t_commission.c_account_no = t_buyers_account.c_account_no

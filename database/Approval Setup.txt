@@ -136,10 +136,59 @@ CREATE SEQUENCE approvers_id_seq
     INCREMENT 1 
     OWNED BY approvers.id;  
 
-ALTER TABLE approvals 
+-- Link the sequence to the 'id' column
+ALTER TABLE approvers
     ALTER COLUMN id SET DEFAULT nextval('approvers_id_seq');
 
 
 
 
+CREATE TABLE t_new_commission_log
+(
+    c_code integer,
+    c_account_no bigint,
+    c_buyers_name text,
+    c_commission_amount double precision,
+    c_rate double precision,
+    c_net_commission double precision,
+    c_prev_comm double precision,
+    c_due_comm double precision,
+    c_prev_comm_amt double precision,
+    c_commission_count integer,
+    c_print_date date
+);
 
+
+
+
+CREATE OR REPLACE VIEW view_sequential_approvals AS
+SELECT 
+    r.id AS request_id,
+    r.requester_id,
+    r.description AS request_description,
+    r.request_type,
+    r.status AS request_status,
+    a.id AS approval_id,
+    a.role_id,
+    a.approver_id,
+    a.approval_status,
+    a.approval_order,
+    roles.role_name AS approver_role,
+    COALESCE(
+        (SELECT ap.approval_status 
+         FROM approvals ap 
+         WHERE ap.request_id = r.id AND ap.approval_order = a.approval_order - 1
+        ), 'approved'
+    ) AS previous_status
+FROM 
+    requests r
+JOIN 
+    approvals a ON r.id = a.request_id
+JOIN 
+    roles ON a.role_id = roles.id
+WHERE 
+    a.approval_order = 1 
+    OR (a.approval_order > 1 AND 
+        (SELECT ap.approval_status 
+         FROM approvals ap 
+         WHERE ap.request_id = r.id AND ap.approval_order = a.approval_order - 1) = 'approved');

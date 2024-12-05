@@ -72,8 +72,8 @@ if ($row === false) {
         'FD' => 'Full Down Payment',
     ];
     
-    $payment_type1 = $row['c_payment_type1'];
-    $payment_type1 = isset($payment_type_map[$payment_type1]) ? $payment_type_map1[$payment_type1] : '';
+    $payment_type1 = isset($payment_type_map1[$payment_type1]) ? $payment_type_map1[$payment_type1] : '';
+
 
     $payment_type2 = $row['c_payment_type2'];
     $payment_type_map2 = [
@@ -224,192 +224,258 @@ odbc_close($conn2);
 <div class="card card-outline rounded-0 card-maroon">
     
 	<div class="card-header">
-	<h3 class="card-title"><b>Property Account No#: <i><?php echo $l_acct_no;  ?> </i> </b></h3>
+	<h3 class="card-title"><b>Account No#: <i><?php echo $l_acct_no;  ?> </i> </b></h3>
 	</div>
 	<div class="card-body">
     <div class="container-fluid">
  
     <div class="panel-heading">
-        <div class="titles"><center><h5>Payment Computation<h5></center></div>
+        <div class="titles"><center><h5>Restructuring Form<h5></center></div>
     </div>
 
     <form action="" id="restructuring">
              
-    <div class="panel-body form-group form-group-sm">
-        <div class="main_box">
+        <div class="panel-body form-group form-group-sm">
             <div class="row">
-                <div class="col-md-6">
+                <!-- Balance Column -->
+                <div class="col-md-4">
                     <div class="form-group">
                         <input type="hidden" id="comm" name="comm" value="<?php echo $username; ?> restructured account with property ID # <?php echo $l_acct_no; ?>.">
                         <input type="hidden" class="form-control margin-bottom required prop-id" name="prop_id" id="prop_id" value="<?= isset($row['c_account_no']) ? $row['c_account_no'] : '' ?>">
-     
+                        
                         <label class="control-label">Balance:</label>
-                        <input type="text" class="form-control margin-bottom required balance" name="balance" id="balance" value="<?php echo isset($row['c_balance']) ? number_format($row['c_balance'],2) : 0; ?>" tabindex = "1" >
+                        <input type="text" class="form-control margin-bottom required balance" name="balance" id="balance" value="<?php echo isset($row['c_balance']) ? number_format($row['c_balance'],2) : 0; ?>" readonly >
                     </div>
                 </div>
-                <div class="col-md-6">	
+                
+                <!-- Account Status Column -->
+                <div class="col-md-4">    
                     <div class="form-group">
-                         <div class="form-group">
-                            <label for="acc_stat">Account Status:</label>
-                            <select name="acc_stat" id="acc_stat" class="form-control required acc-status" onchange="updateTextbox()">
-                                <option name="payment_type1" value="Partial DownPayment" <?php echo isset($account_status) && $account_status == "Partial DownPayment" ? 'selected' : '' ?>>Partial DownPayment</option>
-                                <option name="payment_type1" value="Full DownPayment" <?php echo isset($account_status) && $account_status == "Full DownPayment" ? 'selected' : '' ?>>Full DownPayment</option>
-                                <option name="payment_type1" value="Monthly Amortization" <?php echo isset($account_status) && $account_status == "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
-                                <option name="payment_type1" value="Deferred Cash Payment" <?php echo isset($account_status) && $account_status == "Deferred Cash Payment" ? 'selected' : '' ?>>Deferred Cash Payment</option>
-                            </select>
-                        </div>
+                        <label class="control-label">Account Status:</label>
+                        <input type="text" class="form-control margin-bottom required acc-status" name="acc_stat" id="acc_stat" value="<?php echo isset($account_status) ? $account_status : ''; ?>" readonly >
+                    </div>
+                </div>
 
-                        <div style="display: none;">
-                            <input type="text" class="form-control margin-bottom required acc-status" name="hidden_acc_stat" id="hidden_acc_stat" value="<?php echo isset($account_status) ? $account_status : ''; ?>" tabindex="1">
-                        </div>
-
-                        <script>
-                            function updateTextbox() {
-                                // Get the selected value from the dropdown
-                                var selectedValue = document.getElementById('acc_stat').value;
-
-                                // Set the value of the hidden input field
-                                document.getElementById('hidden_acc_stat').value = selectedValue;
-                            }
-
-                            // Call the function on page load to sync the dropdown and hidden input
-                            document.addEventListener("DOMContentLoaded", function() {
-                                updateTextbox();
-                            });
-                        </script>
- 
-                        </div>
+                <!-- Restructuring Date Column -->
+                <div class="col-md-4">    
+                    <div class="form-group">
+                        <label class="control-label">Restructuring Date: </label>
+                        <input type="date" class="form-control restructured-date" name="restructured_date" id="restructured_date" value="<?php echo date('Y-m-d'); ?>" >
+                    </div>
                 </div>
             </div>
+
+            <div class="panel-heading">
+                <div class="titles"><center><h5>BEFORE<h5></center></div>
+            </div>
+        <div class="main_box">
             <div class="row">
-              <div class="col-md-12">	
-                  <div class="form-group">
-                    <label class="control-label">Restructuring Date: </label>
-                    <input type="date" class="form-control restructured-date" name="restructured_date" id="restructured_date" value="<?php echo date('Y-m-d'); ?>" >
-                  </div>
-              </div>
-          </div>
-    <div class="space"></div>
-    <div class="payment_box" id = "p1_box">
-        <div class="col-md-12"  id = "pay_type1">	
-            <label class="control-label">Payment Type 1: </label>
-            <div class="form-group">
-            <style>
-                select:invalid { color: gray; }
-            </style>
-            
-            <select name="payment_type1" id="payment_type1" class="form-control required pay-type1" tabindex = "2">
-            <?php if ($account_status == 'Monthly Amortization'): ?>
-                <option name="payment_type1" value="Partial DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?> style="background-color: gainsboro; color: black;">Partial DownPayment</option>
-                <option name="payment_type1" value="Full DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?> style="background-color: gainsboro; color: black;">Full DownPayment</option>
-                <option name="payment_type1" value="No DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?>style="background-color: gainsboro; color: black;">No DownPayment</option>
-              <?php elseif ($account_status == 'Reservation'): ?>
-                <option name="payment_type1" value="Partial DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?>>Partial DownPayment</option>
-                <option name="payment_type1" value="Full DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?>>Full DownPayment</option>
-                <option name="payment_type1" value="No DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?>>No DownPayment</option>
-            <?php elseif ($account_status == 'Partial DownPayment'): ?>
-                <option name="payment_type1" value="Partial DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?>>Partial DownPayment</option>
-                <option name="payment_type1" value="Full DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?>>Full DownPayment</option>
-                <option name="payment_type1" value="No DownPayment" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?>>No DownPayment</option>
-            <?php endif; ?>
-              </select>	
-          </div>	
-      </div>
-    </div>
-    <div class="payment_box2" id = "p2_box">
-        <div class="col-md-12" id= "pay_type2">
-            <label class="control-label">Payment Type 2: </label>
-            <div class="form-group">
+                
+                <div class="col-md-12">
+                    <table class="table table-bordered">
+                        <!-- Down Payment Phase -->
+                        <thead>
+                            <tr>
+                                <th class="text-green h6" colspan="4"><i class="fa fa-arrow-down"></i> Down Payment Phase</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- First Row -->
+                            <tr>
+                                <td><label class="control-label">Down Payment Type</label></td>
+                                <td><input type="text" class="form-control margin-bottom required down-payment-type" name="down_payment_type_before" id="down_payment_type_before" value="<?= isset($payment_type1) ? $payment_type1 : '' ?>" readonly></td>      
+                                <td><label class="control-label">Down Percent(%)</label></td>
+                                <td><input type="text" class="form-control margin-bottom required down-percent" name="down_percent_before" id="down_percent_before" value="<?= isset($down_percent) ? $down_percent : '' ?>" readonly></td>
+                            </tr>
+                            <!-- Second Row -->
+                            <tr>
+                                <td><label class="control-label" id="no_pay_text">No. of Payments</label></td>
+                                <td><input type="text" class="form-control margin-bottom required no-payment" name="no_payment_before" id="no_payment_before" value="<?= isset($no_payments) ? $no_payments : '' ?>" readonly></td>
+                                <td><label class="control-label" id="mo_down_text">Monthly Down Payment</label></td>
+                                <td><input type="text" class="form-control margin-bottom required monthly-down" name="monthly_down_before" value="<?= isset($monthly_down) ? number_format($monthly_down, 2) : '' ?>" readonly></td>
+                            </tr>
+                            <!-- Third Row -->
+                            <tr>
+                                <td><label class="control-label">First Down Payment</label></td>
+                                <td><input type="text" class="form-control first-dp-date" name="first_dp_date_before" id="first_dp_date_before" value="<?= isset($first_dp) ? $first_dp : '' ?>" readonly></td>
+                                <td><label class="control-label">Full Down Payment</label></td>
+                                <td><input type="text" class="form-control full-down-date" name="full_down_date_before" id="full_down_date_before" value="<?= isset($full_down) ? $full_down : '' ?>" readonly></td>
+                            </tr>
+                        </tbody>
+
+                        <!-- Amortization Phase -->
+                        <thead>
+                            <tr>
+                                <th class="text-green h6" colspan="4"><i class="fa fa-dollar-sign"></i> Amortization Phase</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- First Row -->
+                            <tr>
+                                <td><label class="control-label">Amortization Type</label></td>
+                                <td><input type="text" class="form-control margin-bottom required payment-type2" name="payment_type2_before" id="payment_type2_before" value="<?= isset($payment_type2) ? $payment_type2 : '' ?>" readonly></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            <!-- Second Row -->
+                            <tr>
+                                <td><label class="control-label" id='loan_text_before'>Amount to be Financed:</label></td>
+                                <td><input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_to_be_financed_before" id="amt_to_be_financed_before" value="<?= isset($amt_fnanced) ? number_format($amt_fnanced, 2) : '' ?>" readonly></td>
+                                <td><label class="control-label">Terms:</label></td>
+                                <td><input type="text" class="form-control margin-bottom required terms-count" name="terms_before" id="terms_before" value="<?= isset($terms) ? $terms : '' ?>" readonly></td>
+                            </tr>
+                            <!-- Third Row -->
+                            <tr>
+                                <td><label class="control-label" id='rate_text_before'>Interest Rate:</label></td>
+                                <td><input type="text" class="form-control margin-bottom required interest-rate" name="interest_rate_before" id="interest_rate_before" value="<?= isset($interest_rate) ? $interest_rate : '' ?>" readonly></td>
+                                <td><label class="control-label" id='factor_text_before'>Fixed Factor:</label></td>
+                                <td><input type="text" class="form-control margin-bottom required fixed-factor" name="fixed_factor_before" id="fixed_factor_before" value="<?= isset($fixed_factor) ? number_format($fixed_factor, 8) : '' ?>" readonly></td>
+                            </tr>
+                            <!-- Fourth Row -->
+                            <tr>
+                                <td><label class="control-label">Monthly Payment:</label></td>
+                                <td><input type="text" class="form-control margin-bottom required monthly-amor" name="monthly_amortization_before" id="monthly_amortization_before" value="<?= isset($monthly_payment) ? number_format($monthly_payment, 2) : '' ?>" readonly></td>
+                                <td><label class="control-label" id="start_text">Start Date:</label></td>
+                                <td><input type="text" class="form-control required mo-start-date" name="start_date_before" id="start_date_before" value="<?= isset($start_date) ? $start_date : '' ?>" readonly></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    </div>
+            </div>
+        </div>
+        <div class="space"></div>
+            <div class="panel-heading">
+                <div class="titles"><center><h5>AFTER<h5></center></div>
+            </div>
+        <div class="main_box">
+          
+         <div class="payment_box" id = "p1_box">
+           
+            <div class="col-md-12"  id = "pay_type1">	
+                <label class="control-label">Payment Type 1: </label>
+                <div class="form-group">
                 <style>
                     select:invalid { color: gray; }
                 </style>
-                <select name="payment_type2" id="payment_type2" class="form-control required pay-type2" tabindex = "3" >
-                <?php if ($account_status == 'Deferred Cash Payment'): ?>
-                    <option name="payment_type2" value="Deferred Cash Payment" <?php echo isset($payment_type2) && $payment_type2 == "Deferred Cash Payment" ? 'selected' : '' ?>>Deferred Cash Payment</option>
-                    <option name="payment_type2" value="Monthly Amortization" <?php echo isset($payment_type2) && $payment_type2 =! "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
+                
+                <select name="payment_type1" id="payment_type1" class="form-control required pay-type1" tabindex = "2">
+                <?php if ($account_status == 'Monthly Amortization'): ?>
+                    <option name="payment_type1" value="PD" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?> style="background-color: gainsboro; color: black;">Partial DownPayment</option>
+                    <option name="payment_type1" value="FD" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?> style="background-color: gainsboro; color: black;">Full DownPayment</option>
+                    <option name="payment_type1" value="ND" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?>style="background-color: gainsboro; color: black;">No DownPayment</option>
                 <?php elseif ($account_status == 'Reservation'): ?>
-                    <option name="payment_type2" value="Deferred Cash Payment" <?php echo isset($payment_type2) && $payment_type2 == "Deferred Cash Payment" ? 'selected' : '' ?>>Deferred Cash Payment</option>
-                    <option name="payment_type2" value="Monthly Amortization" <?php echo isset($payment_type2) && $payment_type2 == "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
-                <?php elseif ($account_status == 'Monthly Amortization'): ?>
-                    <option name="payment_type2" value="Monthly Amortization" <?php echo isset($payment_type2) && $payment_type2 == "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
-                    <option name="payment_type2" value="Deferred Cash Payment" <?php echo isset($payment_type2) && $payment_type2 =! "Deferred Cash Payment" ? 'selected' : '' ?> disabled style="background-color: gainsboro; color: black;">Deferred Cash Payment</option>
-                <?php elseif ($account_status == 'Partial DownPayment' || $account_status == 'Full DownPayment'): ?>
-                    <option name="payment_type2" value="Monthly Amortization" <?php echo isset($payment_type2) && $payment_type2 == "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
-                    <option name="payment_type2" value="Deferred Cash Payment" <?php echo isset($payment_type2) && $payment_type2 == "Deferred Cash Payment" ? 'selected' : '' ?>>Deferred Cash Payment</option>
+                    <option name="payment_type1" value="PD" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?>>Partial DownPayment</option>
+                    <option name="payment_type1" value="FD" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?>>Full DownPayment</option>
+                    <option name="payment_type1" value="ND" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?>>No DownPayment</option>
+                <?php elseif ($account_status == 'Partial DownPayment'): ?>
+                    <option name="payment_type1" value="PD" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?>>Partial DownPayment</option>
+                    <option name="payment_type1" value="FD" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?>>Full DownPayment</option>
+                    <option name="payment_type1" value="ND" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?>>No DownPayment</option>
+                <?php else: ?>
+                    <option name="payment_type1" value="PD" <?php echo isset($payment_type1) && $payment_type1 == "Partial DownPayment" ? 'selected' : '' ?>>Partial DownPayment</option>
+                    <option name="payment_type1" value="FD" <?php echo isset($payment_type1) && $payment_type1 == "Full DownPayment" ? 'selected' : '' ?>>Full DownPayment</option>
+                    <option name="payment_type1" value="ND" <?php echo isset($payment_type1) && $payment_type1 == "No DownPayment" ? 'selected' : '' ?>>No DownPayment</option>
                 <?php endif; ?>
                 </select>	
-            </div>
+            </div>	
         </div>
-    </div>
-    <div class="space"></div>
-    <div class="payment_box" id="p1">
-        <div class="col-md-12">
-            <div class="form-group down-frm" id= "down_frm" >
-                <label for="net_dp" class="control-label">Total DP Due: </label>
-                <input type="text" class="form-control margin-bottom required net-dp" name="net_dp" id="net_dp" value="<?php echo isset($net_dp) ? number_format($net_dp,2) : 0; ?>" readonly>
-                <label for="less_paymt_dte" class="control-label" >Less Paym't to Date : </label>
-                <input type="text" class="form-control less-paymt-date" name="less_paymt_dte" id="less_paymt_dte" value="0">
-                <label for="dp_bal" class="control-label">DP Balance : </label>
-                <input type="text" class="form-control margin-bottom required dp-bal" name="dp_bal" id="dp_bal" value="<?php echo isset($net_dp) ? number_format($net_dp,2) : 0; ?>" readonly>
-                <label for="acc_surcharge1" class="control-label" >Accrued Surcharge: </label>
-                <input type="text" class="form-control margin-bottom required acc-surcharge1" name="acc_surcharge1" id="acc_surcharge1" value="0">
-                <!--  <label for= "rem_dp" class="control-label">Rem. DP Term/s : </label> -->
-               
-                <?php if ($account_status == 'Partial DownPayment' )  : ?>
-                <label class="control-label">Rem. DP Term/s : </label> <i> Remaining: <?php echo $no_payments = $remain_no_pay;  ?> </i>
-                <?php else:?>
-                <label class="control-label">Rem. DP Term/s : <?php echo $no_payments ?></label>
-                <?php endif; ?>
-
-                <?php
-                // Ensure $monthly_down is computed based on $net_dp and $no_payments
-                $monthly_down = isset($net_dp) && isset($no_payments) && $no_payments > 0 ? $net_dp / $no_payments : 0;
-
-                // Display the HTML with the calculated value
-                ?>
-                <input type="text" class="form-control margin-bottom required rem-dp" name="rem_dp" id="rem_dp" value="<?php echo isset($no_payments) ? $no_payments : 1; ?>" maxlength= "2">
-                <label for= "monthly_down" class="control-label" id ="mo_down_text">Monthly Down: </label>
-                <input type="text" class="form-control margin-bottom required monthly-down" name="monthly_down" id="monthly_down" value="<?php echo isset($monthly_down) ? number_format($monthly_down,2) : 0; ?>"  >
-                <label class="control-label">Commencing: </label>
-                <input type="date" class="form-control first-down-date" name="first_down_date" id = "first_down_date" value="<?php echo isset($first_dp) ? $first_dp : ''; ?>">
-                <label class="control-label">Until: </label>        
-                <input type="date" class="form-control fd-date" name="fd_date" id = "fd_date" value="<?php echo isset($full_down) ? $full_down : ''; ?>">
-                    
+        </div>
+        <div class="payment_box2" id = "p2_box">
+            <div class="col-md-12" id= "pay_type2">
+                <label class="control-label">Payment Type 2: </label>
+                <div class="form-group">
+                    <style>
+                        select:invalid { color: gray; }
+                    </style>
+                    <select name="payment_type2" id="payment_type2" class="form-control required pay-type2" tabindex = "3" >
+                    <?php if ($account_status == 'Deferred Cash Payment'): ?>
+                        <option name="payment_type2" value="DFC" <?php echo isset($payment_type2) && $payment_type2 == "Deferred Cash Payment" ? 'selected' : '' ?>>Deferred Cash Payment</option>
+                        <option name="payment_type2" value="MA" <?php echo isset($payment_type2) && $payment_type2 =! "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
+                    <?php elseif ($account_status == 'Reservation'): ?>
+                        <option name="payment_type2" value="DFC" <?php echo isset($payment_type2) && $payment_type2 == "Deferred Cash Payment" ? 'selected' : '' ?>>Deferred Cash Payment</option>
+                        <option name="payment_type2" value="MA" <?php echo isset($payment_type2) && $payment_type2 == "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
+                    <?php elseif ($account_status == 'Monthly Amortization'): ?>
+                        <option name="payment_type2" value="MA" <?php echo isset($payment_type2) && $payment_type2 == "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
+                        <option name="payment_type2" value="DFC" <?php echo isset($payment_type2) && $payment_type2 =! "Deferred Cash Payment" ? 'selected' : '' ?> disabled style="background-color: gainsboro; color: black;">Deferred Cash Payment</option>
+                    <?php elseif ($account_status == 'Partial DownPayment' || $account_status == 'Full DownPayment'): ?>
+                        <option name="payment_type2" value="MA" <?php echo isset($payment_type2) && $payment_type2 == "Monthly Amortization" ? 'selected' : '' ?>>Monthly Amortization</option>
+                        <option name="payment_type2" value="DFC" <?php echo isset($payment_type2) && $payment_type2 == "Deferred Cash Payment" ? 'selected' : '' ?>>Deferred Cash Payment</option>
+                    <?php endif; ?>
+                    </select>	
+                </div>
+            </div>
+       
+        </div>
+        <div class="space"></div>
+        <div class="payment_box" id="p1">
+            <div class="col-md-12">
+                <div class="form-group down-frm" id= "down_frm" >
+                    <label for="net_dp" class="control-label">Total DP Due: </label>
+                    <input type="text" class="form-control margin-bottom required net-dp" name="net_dp" id="net_dp" value="<?php echo isset($net_dp) ? number_format($net_dp,2) : 0; ?>" readonly>
+                    <label for="less_paymt_dte" class="control-label" >Less Paym't to Date : </label>
+                    <input type="text" class="form-control less-paymt-date" name="less_paymt_dte" id="less_paymt_dte" value="0">
+                    <label for="dp_bal" class="control-label">DP Balance : </label>
+                    <input type="text" class="form-control margin-bottom required dp-bal" name="dp_bal" id="dp_bal" value="<?php echo isset($net_dp) ? number_format($net_dp,2) : 0; ?>" readonly>
+                    <label for="acc_surcharge1" class="control-label" >Accrued Surcharge: </label>
+                    <input type="text" class="form-control margin-bottom required acc-surcharge1" name="acc_surcharge1" id="acc_surcharge1" value="0">
+                    <!--  <label for= "rem_dp" class="control-label">Rem. DP Term/s : </label> -->
                 
+                    <?php if ($account_status == 'Partial DownPayment' )  : ?>
+                    <label class="control-label">Rem. DP Term/s : </label> <i> Remaining: <?php echo $no_payments = $remain_no_pay;  ?> </i>
+                    <?php else:?>
+                    <label class="control-label">Rem. DP Term/s : <?php echo $no_payments ?></label>
+                    <?php endif; ?>
+
+                    <?php
+                    // Ensure $monthly_down is computed based on $net_dp and $no_payments
+                    $monthly_down = isset($net_dp) && isset($no_payments) && $no_payments > 0 ? $net_dp / $no_payments : 0;
+
+                    // Display the HTML with the calculated value
+                    ?>
+                    <input type="text" class="form-control margin-bottom required rem-dp" name="rem_dp" id="rem_dp" value="<?php echo isset($no_payments) ? $no_payments : 1; ?>" maxlength= "2">
+                    <label for= "monthly_down" class="control-label" id ="mo_down_text">Monthly Down: </label>
+                    <input type="text" class="form-control margin-bottom required monthly-down" name="monthly_down" id="monthly_down" value="<?php echo isset($monthly_down) ? number_format($monthly_down,2) : 0; ?>"  >
+                    <label class="control-label">Commencing: </label>
+                    <input type="date" class="form-control first-down-date" name="first_down_date" id = "first_down_date" value="<?php echo isset($first_dp) ? $first_dp : ''; ?>">
+                    <label class="control-label">Until: </label>        
+                    <input type="date" class="form-control fd-date" name="fd_date" id = "fd_date" value="<?php echo isset($full_down) ? $full_down : ''; ?>">
+                        
+                    
+                </div>
+            </div>
+        </div>		
+        <div class="payment_box2" id="p2">	
+            <div class="col-md-12">
+                <label class="control-label" id ="amt_tobe_financed_text" >Amount to be Financed:</label>
+                <input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_2be_financed" id="amt_2be_financed" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>"readonly>
+                <label class="control-label" id="acc_int_text">Acc. Interest:</label>
+                <input type="text" class="form-control margin-bottom required acc-interest" name="acc_interest" id="acc_interest" value="0">
+                <label class="control-label"  id="acc_sur_text" >Acc. Surcharge:</label>
+                <input type="text" class="form-control margin-bottom required acc-surcharge2" name="acc_surcharge2" id="acc_surcharge2" value="0">
+                <label class="control-label"  id="adj_text" >Adj. Principal Balance:</label>
+                <input type="text" class="form-control margin-bottom required adj-prin-bal" name="adj_prin_bal" id="adj_prin_bal" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>" readonly>
+            
+                <div class="form-group monthly-frm" id = "monthly_frm">
+                <?php if ($account_status == 'Monthly Amortization' || $account_status == 'Deferred Cash Payment' )  : ?>
+                    <label class="control-label">Terms: </label> <i> Note: Remaining Terms is <?php echo $remain_terms; ?> </i>
+                    <?php else:?>
+                    <label class="control-label">Terms:  <?php echo $remain_terms = $terms; ?></label>
+                    <?php endif; ?>
+                    <input type="text" class="form-control margin-bottom required ma-terms" name="ma_terms" id="ma_terms" value="<?php echo isset($remain_terms) ? $remain_terms : 1; ?>">
+                    <label for='int_rate' class="control-label" id='rate_text'>Interest Rate: </label>
+                    <input type="text" class="form-control margin-bottom required int-rate" name="int_rate" id="int_rate" value="<?php echo isset($interest_rate) ? $interest_rate : 0; ?>">
+                    <label for='fxd_factor' class="control-label" id='factor_text' >Fixed Factor: </label>
+                    <input type="text" class="form-control margin-bottom required fixed-factor" name="fxd_factor" id="fxd_factor" value="<?php echo isset($fixed_factor) ? number_format($fixed_factor,8) : 0; ?>" readonly>
+                    <label class="control-label">Monthly Payment: </label>
+                    <input type="text" class="form-control margin-bottom required monthly-amor" name="mo_amort" id="mo_amort" value="<?php echo isset($monthly_payment) ? number_format($monthly_payment,2) : 0; ?> "readonly>	
+                </div>
+                <label class="control-label" id= "start_text">Start Date: </label>	
+                <input type="date" class="form-control required mo-start-date" name="start_date" id = "start_date" value="<?php echo date('Y-m-d'); ?>">
             </div>
         </div>
-    </div>		
-    <div class="payment_box2" id="p2">	
-        <div class="col-md-12">
-             <label class="control-label" id ="amt_tobe_financed_text" >Amount to be Financed:</label>
-             <input type="text" class="form-control margin-bottom required amt-to-be-financed" name="amt_2be_financed" id="amt_2be_financed" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>"readonly>
-             <label class="control-label" id="acc_int_text">Acc. Interest:</label>
-             <input type="text" class="form-control margin-bottom required acc-interest" name="acc_interest" id="acc_interest" value="0">
-             <label class="control-label"  id="acc_sur_text" >Acc. Surcharge:</label>
-             <input type="text" class="form-control margin-bottom required acc-surcharge2" name="acc_surcharge2" id="acc_surcharge2" value="0">
-             <label class="control-label"  id="adj_text" >Adj. Principal Balance:</label>
-             <input type="text" class="form-control margin-bottom required adj-prin-bal" name="adj_prin_bal" id="adj_prin_bal" value="<?php echo isset($amt_fnanced) ? number_format($amt_fnanced,2) : 0; ?>" readonly>
-           
-             <div class="form-group monthly-frm" id = "monthly_frm">
-              <?php if ($account_status == 'Monthly Amortization' || $account_status == 'Deferred Cash Payment' )  : ?>
-                <label class="control-label">Terms: </label> <i> Note: Remaining Terms is <?php echo $remain_terms; ?> </i>
-                <?php else:?>
-                <label class="control-label">Terms:  <?php echo $remain_terms = $terms; ?></label>
-                <?php endif; ?>
-                <input type="text" class="form-control margin-bottom required ma-terms" name="ma_terms" id="ma_terms" value="<?php echo isset($remain_terms) ? $remain_terms : 1; ?>">
-                <label for='int_rate' class="control-label" id='rate_text'>Interest Rate: </label>
-                <input type="text" class="form-control margin-bottom required int-rate" name="int_rate" id="int_rate" value="<?php echo isset($interest_rate) ? $interest_rate : 0; ?>">
-                <label for='fxd_factor' class="control-label" id='factor_text' >Fixed Factor: </label>
-                <input type="text" class="form-control margin-bottom required fixed-factor" name="fxd_factor" id="fxd_factor" value="<?php echo isset($fixed_factor) ? number_format($fixed_factor,8) : 0; ?>" readonly>
-                <label class="control-label">Monthly Payment: </label>
-                <input type="text" class="form-control margin-bottom required monthly-amor" name="mo_amort" id="mo_amort" value="<?php echo isset($monthly_payment) ? number_format($monthly_payment,2) : 0; ?> "readonly>	
-            </div>
-            <label class="control-label" id= "start_text">Start Date: </label>	
-            <input type="date" class="form-control required mo-start-date" name="start_date" id = "start_date" value="<?php echo date('Y-m-d'); ?>">
         </div>
-    </div>
-    </div>
-	</div>
+        </div>
 </div>
 
 </form>
@@ -537,7 +603,7 @@ function compute_ma(){
 
 
 
-    if (type === "Deferred Cash Payment" ) {
+    if (type === "DFC" ) {
         if (terms == 0){
             $("#mo_amort").val(0);
         }
@@ -574,7 +640,7 @@ function compute_ma(){
 function payment_type1_changed() {
     var type = $('.pay-type1').val();
 
-    if (type === "Full DownPayment" || type === "No DownPayment") {
+    if (type === "FD" || type === "ND") {
         adjust_for_down_payment(type);
     } else {
         reset_payment_form();
@@ -586,6 +652,8 @@ function payment_type2_changed() {
     var paymentType2 = $('.pay-type2').val();
     var accountStatus = $('.acc-status').val();
 
+    console.log(paymentType2);
+
     $('#loan_text').text("Amount to be financed :");
     $('#int_rate, #fxd_factor, #rate_text, #factor_text, #monthly_frm').show();
     $('#ma_text').text("Monthly Amortization");
@@ -596,7 +664,7 @@ function payment_type2_changed() {
     }
 
     // Handle "Deferred Cash Payment" logic
-    if (paymentType2 === "Deferred Cash Payment") {
+    if (paymentType2 === "DFC") {
         $('#ma_text').text("Deferred Cash Payment");
         if (['Monthly Amortization', 'Deferred Cash Payment'].includes(accountStatus)) {
             $('.acc-status').val("Deferred Cash Payment");
@@ -617,7 +685,7 @@ function payment_type2_changed() {
 function adjust_for_down_payment(type) {
     $('.acc-status').val("Reservation");
 
-    if (type === "Full DownPayment") {
+    if (type === "FD") {
         $('#net_dp, #less_paymt_dte, #dp_bal, #monthly_down, #fd_date').show();
     } else {
         $('#down_frm').hide();
