@@ -30,41 +30,16 @@
 		border-bottom: solid 2px blue;
 		background-color:#E8E8E8;
 	}
-	.nav-ra{
+	.nav-ra-list{
         background-color:#007bff;
         color:white!important;
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.1);
     }
-	.nav-ra:hover{
+	.nav-ra-list:hover{
         background-color:#007bff!important;
         color:white!important;
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.1)!important;
     }
-	.dropdown:hover .dropdown-menu {
-		display: block;
-		margin-top:40px;
-		float:left;
-		width:227px;
-		height:130px;
-		line-height:30px;
-		text-align:center;
-		color:black!important;
-	}
-	.dropdown-menu li a{
-		color:black!important;
-		border:gainsboro 1px solid;
-		display: block;
-		height:40px;
-		line-height:40px;
-	}
-	.dropdown-menu li a:hover{
-		color:black!important;
-		border:gainsboro 1px solid;
-		display: block;
-		height:40px;
-		line-height:40px;
-		background-color:#E8E8E8;
-	}
 	#res-link1{
 		color: currentColor;
 		cursor: not-allowed;
@@ -76,12 +51,10 @@
 		display: flex;
 		justify-content: center;
 	}
-
 	.navbar-menu {
 		width: 100%;
 		max-width: 1200px;
 	}
-
 	@media (max-width: 768px) {
 	.card {
 		flex-direction: column;
@@ -96,40 +69,86 @@
 		table-layout: fixed;
 		width: 100%;
 	}
-
+	.dropdown {
+		position: relative;
+	}
+	.dropdown-menu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		margin-top: 0; 
+		float: none;
+		width: 227px;
+		height: auto;
+		line-height: 30px;
+		text-align: center;
+		background-color: white; 
+		color: black;
+		z-index: 1000;
+		box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+	}
+	.dropdown:hover .dropdown-menu {
+		display: block;
+	}
+	.dropdown-menu li a {
+		color: black;
+		border: 1px solid gainsboro;
+		display: block;
+		height: 40px;
+		line-height: 40px;
+		text-decoration: none;
+		background-color: white;
+		transition: background-color 0.3s ease;
+	}
+	.dropdown-menu li a:hover {
+		background-color: #E8E8E8;
+		color: black;
+		border: 1px solid gainsboro;
+	}
 </style>
-<div class="card" id="container" style="display: flex; justify-content: center;">
-    <div class="navbar-menu" style="width:100%; margin-left: auto; margin-right: auto; max-width: 1200px;">
-		<div class="dropdown">
-			<a href="#" class="main_menu dropdown-toggle" id="ra-link" style="border-left:solid 3px white;" onclick="highlightLink('ralink')"><i class="nav-icon fas fa-list"></i>&nbsp;&nbsp;&nbsp;RAs List</a>
-				<ul class="dropdown-menu" style="border-radius:0px;height:122px;">
-					<li><a href="<?php echo base_url ?>admin/?page=sales" style="margin-top:-8px;"><i class="nav-icon fas fa-clock"></i>&nbsp;&nbsp;&nbsp;Pendings</a></li>
-					<li><a href="<?php echo base_url ?>admin/?page=revision"><i class="nav-icon fa fa-pen"></i>&nbsp;&nbsp;&nbsp;Revisions</a></li>
-					<li><a href="<?php echo base_url ?>admin/?page=ra"><i class="nav-icon fas fa-thumbs-up"></i>&nbsp;&nbsp;&nbsp;Approved</a></li>
-				</ul>
-		</div>
-		<?php if ($usertype == "IT Admin" || $usertype == 'Cashier'){ ?>
-		<a href="<?php echo base_url ?>admin/?page=reservation" class="main_menu" id="res-link" onclick="highlightLink('res-link')"><i class="nav-icon fas fa-calendar"></i>&nbsp;&nbsp;&nbsp;Reservations List</a>
-		
-		<?php }else{ ?>
-		<a href="<?php echo base_url ?>admin/?page=reservation" class="main_menu" id="res-link1" onclick="highlightLink('res-link')"><i class="nav-icon fas fa-calendar"></i>&nbsp;&nbsp;&nbsp;Reservations List</a>
-		<?php } ?>
-		
-		<a href="<?php echo base_url ?>admin/?page=credit_assestment" class="main_menu" id="ca-link" onclick="highlightLink('ca-link')"><i class="nav-icon fas fa-hands-helping"></i>&nbsp;&nbsp;&nbsp;Credit Assessments List</a>
-		<a href="<?php echo base_url ?>admin/?page=final_approval" class="main_menu" id="fa-link" onclick="highlightLink('fa-link')"><i class="nav-icon fas fa-file"></i>&nbsp;&nbsp;&nbsp;CFO Approvals List</a>
-		<!-- <a href="<?php echo base_url ?>admin/?page=clients/property_list" class="main_menu" id="pl-link" onclick="highlightLink('pl-link')"><i class="nav-icon fas fa-home"></i>&nbsp;&nbsp;&nbsp;Property Accounts</a> -->
-		
-		<!-- <div class="dropdown" style="position: relative;">
-			<a href="#" class="main_menu dropdown-toggle" onclick="highlightLink('ralink')"><i class="nav-icon fas fa-home"></i>&nbsp;&nbsp;&nbsp;Property Accounts</a>
-				<ul class="dropdown-menu" style="position: absolute; right: 0; transform: translateX(400%);height:122px;border-radius:0px;">
-					<li><a href="<?php echo base_url ?>admin/?page=clients/property_list" style="margin-top:-8px;"><i class="nav-icon fas fa-check-circle"></i>&nbsp;&nbsp;&nbsp;Active Accounts</a></li>
-					<li><a href="<?php echo base_url ?>admin/?page=transfer"><i class="fa fa-retweet" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;Reopen Accounts</a></li>
-					<li><a href="<?php echo base_url ?>admin/?page=backout"><i class="fa fa-archive" aria-hidden="true"></i>&nbsp;&nbsp;&nbsp;Backouts</a></li>
-				</ul>
-		</div> -->
-	</div>
-</div>
+<?php
+    $c_remarks = '';
+    $l_site = isset($_GET["phase"]) ? $_GET["phase"] : '';
+    $l_block = isset($_GET["block"]) ? $_GET["block"] : '';
+    $l_lot = isset($_GET["lot"]) ? $_GET["lot"] : '' ;
 
+    $l_acc_no = isset($_GET["acc_no"]) ? $_GET["acc_no"] : '' ;
+    $last_name = isset($_GET["last_name"]) ? $_GET["last_name"] : '' ;
+
+    if ($l_acc_no != ''){
+        $l_find = $l_acc_no;
+        
+    }elseif($last_name != ''){
+        $l_find = $last_name;
+    }else{
+    if ($l_block == ''):
+        $l_find = sprintf("%03d", (int)$l_site);
+    else:
+        if ($l_lot == ''):
+            $l_find = sprintf("%03d%03d", (int)$l_site, (int)$l_block);	
+        else:
+            $l_find = sprintf("%03d%03d%02d", (int)$l_site, (int)$l_block, (int)$l_lot);
+            
+        endif;
+    endif;
+    }
+?>
+<div class="card" id="container" style="display: flex; justify-content: center;">
+    <div class="navbar-menu" style="display: flex; justify-content: center; flex-wrap: wrap; width: 100%; margin-left: auto; margin-right: auto; max-width: 1200px;">
+		<div class="dropdown">
+			<a href="#" class="main_menu dropdown-toggle" style="border-left:solid 3px white;">RAs List</a>
+			<ul class="dropdown-menu">
+				<li><a href="<?php echo base_url ?>admin/?page=sales">Pendings</a></li>
+				<li><a href="<?php echo base_url ?>admin/?page=revision">Revisions</a></li>
+				<li><a href="<?php echo base_url ?>admin/?page=ra">Approved</a></li>
+			</ul>
+		</div>
+        <a href="<?php echo base_url ?>admin/?page=reservation" class="main_menu" id="res-link" onclick="highlightLink('res-link')">Reservations List</a>
+        <a href="<?php echo base_url ?>admin/?page=credit_assestment" class="main_menu" id="ca-link" onclick="highlightLink('ca-link')">Credit Assessments List</a>
+        <a href="<?php echo base_url ?>admin/?page=final_approval" class="main_menu" id="fa-link" onclick="highlightLink('fa-link')">CFO Approvals List</a>
+    </div>
+</div>
 <div class="card card-outline rounded-0 card-maroon">
 	<div class="card-header">
 		<h3 class="card-title"><b><i>List of Approved RAs</b></i></h3>
@@ -139,18 +158,6 @@
 	
         <div class="container-fluid">
 			<table class="table table-bordered table-stripped" style="width:100%;text-align:center;">
-			<!-- 	<colgroup>
-					<col width="5%">
-					<col width="15%">
-					<col width="15%">
-					<col width="20%">
-					<col width="30%">
-					<col width="15%">
-					<col width="15%">
-					<col width="15%">
-					<col width="15%">
-					<col width="15%">
-				</colgroup> -->
 				<thead>
 					<tr>
 					<th>RA No.</th>
@@ -162,7 +169,6 @@
                     <th>Reserve Status</th>
                     <th>CA Status</th>
                     <th>Actions</th>
-				
 					</tr>
 				</thead>
 				<tbody>

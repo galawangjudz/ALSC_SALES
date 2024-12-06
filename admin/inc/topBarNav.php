@@ -26,9 +26,8 @@
         float:right;
     }
     .notify-menu {
-        /* ... your existing styles ... */
-        overflow-y: auto; /* Add this line to enable vertical scrollbar */
-        max-height: 600px; /* Adjust max-height as needed */
+        overflow-y: auto; 
+        max-height: 600px; 
         box-shadow: 1px 1px 1px;
         position: absolute;
         width: 250px;
@@ -112,9 +111,7 @@
 .notification-list li {
     margin: 0;
     padding: 7px;
-    /* Add additional styles as needed */
 }
-/* Add this to your existing <style> section */
 .notification-list hr {
     margin: 0px;
     border: none;
