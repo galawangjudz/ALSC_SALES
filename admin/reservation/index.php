@@ -135,9 +135,8 @@ if ($user_role != 'IT Admin' && $user_role != 'Cashier') {
 	</div>
 	<div class="card-body">
 		
-        <div class="container-fluid">
-			<table class="table table-bordered table-stripped" style="width:100%;text-align:center;">
-
+		<div class="table-responsive">
+			<table class="table table-bordered table-stripped">
 				<thead>
 					<tr>
                     <th> No. </th>
