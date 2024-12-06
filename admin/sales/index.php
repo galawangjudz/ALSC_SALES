@@ -124,9 +124,8 @@
 	</div>
 	</div>
 	<div class="card-body">
-        <div class="container-fluid">
-			<table class="table table-bordered table-stripped" style="text-align:center;width:100%;">
-				
+		<div class="table-responsive">
+			<table class="table table-bordered table-stripped">		
 				<thead>
 					<tr>
 					<th>Prepared Date</th>

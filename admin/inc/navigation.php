@@ -127,7 +127,7 @@ $department = $_settings->userdata('department');
                                     </a>
                                   </li> 
                                   <li class="nav-item dropdown">
-                                    <a href="<?php echo base_url ?>admin/?page=inventory/lot-list" class="nav-link nav-inventory">
+                                    <a href="<?php echo base_url ?>admin/?page=inventory/search-lot-list" class="nav-link nav-inventory">
                                     <i class="nav-icon fas fa-cube"></i>
                                       <p>
                                         Inventory

@@ -119,10 +119,8 @@
 		
 	</div>
 	<div class="card-body">
-		<div class="container-fluid">
-        <div class="container-fluid">
-			<table class="table table-bordered table-stripped" style="width:100%;text-align:center;">
-	
+		<div class="table-responsive">
+			<table class="table table-bordered table-stripped">
 				<thead>
 					<tr>
                     <th>RA No.</th>
