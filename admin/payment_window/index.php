@@ -107,6 +107,16 @@ body{
 .default-hide {
   display: none;
 }
+.nav-payment{
+    background-color:#007bff;
+    color:white!important;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+}
+.nav-payment:hover{
+    background-color:#007bff!important;
+    color:white!important;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.1)!important;
+}
 </style>
 
 <?php 
@@ -122,9 +132,7 @@ if (!$conn) {
     die("Connection failed: " . odbc_errormsg());
 }
 
-
 $l_acct_no = isset($_GET["acct_no"]) ? $_GET["acct_no"] : '' ;
-
 
 if($l_acct_no != ''){
   
@@ -182,12 +190,7 @@ if($l_acct_no != ''){
              $net_dp = $row['c_net_dp'];
              $down_percent = $row['c_down_percent'];
              $start_date = $row['c_start_date'];
-             
-        
 		endwhile;
-
-
-
 	}
 
 }
@@ -314,72 +317,71 @@ if($l_acct_no != ''){
 
                 <form method="post" id="print_payment_func">
                     <h3 class="card-title"><b>DUES TABLE</b></h3>
-                    
-                       
-                        <?php 
-                            // Include the overdue details processing file
-                            include 'over_due_details.php'; 
-                        ?>
-
-                        
-                            
-                        <?php
-                            $pay_date = date('Y-m-d');
+                    <?php 
+                        include 'over_due_details.php'; 
+                    ?>
+                    <?php
+                        $pay_date = date('Y-m-d');
+                        if (empty($row)) {
+                            $id = null;
+                            $all_payments = [null, null, null, null, null];  
+                            $over_due = [];  
+                        } else {
                             $id = $row['c_account_no'];
-                            // Assuming load_data is a function that calculates overdue details
-                            $all_payments = load_data($conn2, $id, $pay_date);
-
-                            $over_due = $all_payments[0];
-                            $total_amt_due = $all_payments[1];
-                            $total_interest = $all_payments[2];
-                            $total_principal = $all_payments[3];
-                            $total_surcharge = $all_payments[4];
-                            ?>
-                        
+                            $all_payments = load_data($conn2, $id, $pay_date) ?? [null, null, null, null, null];
+                            $over_due = $all_payments[0] ?? []; 
+                        }
+                        $total_amt_due = $all_payments[1] ?? null;
+                        $total_interest = $all_payments[2] ?? null;
+                        $total_principal = $all_payments[3] ?? null;
+                        $total_surcharge = $all_payments[4] ?? null;
+                    ?>
                         <div class="table-responsive">   
                         <table class="table2 table-bordered table-striped" id="overdue_table" style="width:100%;">
-                        <thead> 
-                            <tr>
-                                <th style="text-align:center;font-size:13px;">DUE DATE</th>
-                                <th style="text-align:center;font-size:13px;">PAID DATE</th>
-                                <th style="text-align:center;font-size:13px;">OR NO</th>
-                                <th style="text-align:center;font-size:13px;">AMT PAID</th> 
-                                <th style="text-align:center;font-size:13px;">AMT DUE</th>
-                                <th style="text-align:center;font-size:13px;">PENALTY</th>
-                                <th style="text-align:center;font-size:13px;">INTEREST</th>
-                                <th style="text-align:center;font-size:13px;">PRINCIPAL</th>
-                                <th style="text-align:center;font-size:13px;">REBATE</th>
-                                <th style="text-align:center;font-size:13px;">PERIOD</th>
-                                <th style="text-align:center;font-size:13px;">BALANCE</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                    <?php foreach ($over_due as $l_data): ?>
-                    <tr>
-                        <td class="text-center" style="font-size:13px;width:8.5%;"><?php echo $l_data[0] ?></td> 
-                        <td class="text-center" style="font-size:13px;width:8%;"><?php echo $l_data[1] ?></td> 
-                        <td class="text-center" style="font-size:13px;width:8%;"><?php echo $l_data[2] ?></td> 
-                        <td class="text-center editable" style="font-size:13px;width:12%;"><?php echo $l_data[3] ?></td> <!-- AMT PAID (Editable) -->
-                        <td class="text-center " style="font-size:13px;width:12%;"><?php echo $l_data[4] ?></td> <!-- AMT DUE (Non-editable) -->
-                        <td class="text-center editable" style="font-size:13px;width:10%;"><?php echo $l_data[7] ?></td> <!-- PENALTY (Editable) -->
-                        <td class="text-center " style="font-size:13px;width:10%;"><?php echo $l_data[5] ?></td> <!-- INTEREST (Non-editable) -->
-                        <td class="text-center" style="font-size:13px;width:12%;"><?php echo $l_data[6] ?></td> <!-- PRINCIPAL (Non-editable) -->
-                        <td class="text-center" style="font-size:13px;width:12%;"><?php echo str_replace(",", "",$l_data[8]) ?></td>  <!-- REBATE (Non-editable) -->
-                        <td class="text-center" style="font-size:13px;width:12%;"><?php echo $l_data[9] ?></td>  <!-- PERIOD (Non-editable) -->
-                        <td class="text-center" style="font-size:13px;width:15%;"><?php echo $l_data[10] ?></td>  <!-- BALANCE (Non-editable) -->
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-                </table>
-
+                            <thead> 
+                                <tr>
+                                    <th style="text-align:center;font-size:13px;">DUE DATE</th>
+                                    <th style="text-align:center;font-size:13px;">PAID DATE</th>
+                                    <th style="text-align:center;font-size:13px;">OR NO</th>
+                                    <th style="text-align:center;font-size:13px;">AMT PAID</th> 
+                                    <th style="text-align:center;font-size:13px;">AMT DUE</th>
+                                    <th style="text-align:center;font-size:13px;">PENALTY</th>
+                                    <th style="text-align:center;font-size:13px;">INTEREST</th>
+                                    <th style="text-align:center;font-size:13px;">PRINCIPAL</th>
+                                    <th style="text-align:center;font-size:13px;">REBATE</th>
+                                    <th style="text-align:center;font-size:13px;">PERIOD</th>
+                                    <th style="text-align:center;font-size:13px;">BALANCE</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php if (!empty($over_due)): ?>
+                                    <?php foreach ($over_due as $l_data): ?>
+                                        <tr>
+                                            <td class="text-center" style="font-size:13px;width:8.5%;"><?php echo htmlspecialchars($l_data[0]) ?></td> 
+                                            <td class="text-center" style="font-size:13px;width:8%;"><?php echo htmlspecialchars($l_data[1]) ?></td> 
+                                            <td class="text-center" style="font-size:13px;width:8%;"><?php echo htmlspecialchars($l_data[2]) ?></td> 
+                                            <td class="text-center editable" style="font-size:13px;width:12%;"><?php echo htmlspecialchars($l_data[3]) ?></td> <!-- AMT PAID (Editable) -->
+                                            <td class="text-center " style="font-size:13px;width:12%;"><?php echo htmlspecialchars($l_data[4]) ?></td> <!-- AMT DUE (Non-editable) -->
+                                            <td class="text-center editable" style="font-size:13px;width:10%;"><?php echo htmlspecialchars($l_data[7]) ?></td> <!-- PENALTY (Editable) -->
+                                            <td class="text-center " style="font-size:13px;width:10%;"><?php echo htmlspecialchars($l_data[5]) ?></td> <!-- INTEREST (Non-editable) -->
+                                            <td class="text-center" style="font-size:13px;width:12%;"><?php echo htmlspecialchars($l_data[6]) ?></td> <!-- PRINCIPAL (Non-editable) -->
+                                            <td class="text-center" style="font-size:13px;width:12%;"><?php echo htmlspecialchars(str_replace(",", "", $l_data[8])) ?></td>  <!-- REBATE (Non-editable) -->
+                                            <td class="text-center" style="font-size:13px;width:12%;"><?php echo htmlspecialchars($l_data[9]) ?></td>  <!-- PERIOD (Non-editable) -->
+                                            <td class="text-center" style="font-size:13px;width:15%;"><?php echo htmlspecialchars($l_data[10]) ?></td>  <!-- BALANCE (Non-editable) -->
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="11" class="text-center" style="font-size:13px;">No overdue data available.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                    </table>
                     <script>
                         document.querySelectorAll("#overdue_table td.editable").forEach(function(cell) {
-                            // Make the specified cell editable
                             cell.addEventListener("click", function() {
                                 this.setAttribute("contenteditable", "true");
                             });
-
-                            // When the user presses Enter, save the change and remove the editable attribute
                             cell.addEventListener("keydown", function(e) {
                                 if (e.key === "Enter") {
                                     e.preventDefault();
@@ -387,7 +389,6 @@ if($l_acct_no != ''){
                                 }
                             });
 
-                            // Remove edit mode on blur (when clicking outside the cell)
                             cell.addEventListener("blur", function() {
                                 this.setAttribute("contenteditable", "false");
                             });

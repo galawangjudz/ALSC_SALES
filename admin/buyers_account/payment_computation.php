@@ -19,7 +19,6 @@
                     </thead>
                     <tbody>
                         <tr>
-                            
                             <td><label class="control-label">Total Selling Price:</label></td>
                             <td data-label="Total Selling Price:"><input type="text" class="form-control margin-bottom required net-tcp-1" name="net_tcp1" id="net_tcp1" value="<?= number_format($row['c_net_tcp'],2) ?>" readonly></td>
 

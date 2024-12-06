@@ -20,6 +20,16 @@
     .hidden-button {
         display: none;
     }
+    .nav-new-comm{
+        background-color:#007bff;
+        color:white!important;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+    }
+    .nav-new-comm:hover{
+        background-color:#007bff!important;
+        color:white!important;
+        box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.1)!important;
+    }
 </style>
 <style>
     .col-id { width: 5%; }
