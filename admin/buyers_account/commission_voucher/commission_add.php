@@ -211,7 +211,7 @@ if (isset($_GET['acc']) && isset($_GET['dos'])){
                     </div>
                     <div class="col-md-4">
                         <label for="c_amount">Commission Amount:</label>
-                        <input type="text" class="form-control" id="c_amount" name="c_amount" value="<?= isset($c_amount) ? $c_amount : 0 ?>" readonly>
+                        <input type="text" class="form-control" id="c_amount" name="c_amount" value="<?= isset($c_amount) ? number_format($c_amount, 2) : number_format(0, 2) ?>" readonly>
                     </div>
                 </div>
                 <script>

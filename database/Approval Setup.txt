@@ -1,0 +1,194 @@
+Approval Setup
+
+
+CREATE TABLE t_restructuring (
+    c_restructured_no INT PRIMARY KEY,           -- Restructured number (unique for each restructuring)
+    c_account_no VARCHAR(20) NOT NULL,                    -- Account number (can be repeated across restructurings)
+    c_version_id INT NOT NULL,                             -- Version identifier
+    c_account_status VARCHAR(20) NOT NULL,                 -- Account status
+    c_payment_type1 VARCHAR(20),                           -- Primary payment type
+    c_payment_type2 VARCHAR(20),                           -- Secondary payment type
+    c_net_dp NUMERIC(15, 2),                               -- Net down payment
+    c_less_dp NUMERIC(15, 2),                              -- Less down payment
+    c_acc_surcharge1 NUMERIC(15, 2),                       -- Surcharge 1
+    c_no_payments INT,                                     -- Number of payments
+    c_monthly_down NUMERIC(15, 2),                         -- Monthly down payment
+    c_first_dp DATE NOT NULL,                             -- First down date
+    c_full_down DATE NOT NULL,                            -- Full down date
+    c_amt_financed NUMERIC(15, 2),                         -- Amount financed
+    c_acc_surcharge2 NUMERIC(15, 2),                       -- Surcharge 2
+    c_acc_interest NUMERIC(15, 2),                         -- Accrued interest
+    c_adj_prin_bal NUMERIC(15, 2),                         -- Adjusted principal balance
+    c_terms INT,                                           -- Loan terms in months
+    c_interest_rate NUMERIC(5, 3),                         -- Interest rate (e.g., 5.000 for 5%)
+    c_fixed_factor NUMERIC(15, 8),                         -- Fixed factor
+    c_monthly_payment NUMERIC(15, 2),                      -- Monthly payment amount
+    c_start_date DATE NOT NULL,                            -- Start date of restructuring
+    c_created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,      -- Creation timestamp
+    c_restructured_status VARCHAR(20) DEFAULT 'pending',   -- Status of restructuring
+    c_request_id INT REFERENCES requests(id) ON DELETE CASCADE,  -- Link to requests table
+    CONSTRAINT uq_account_restructured UNIQUE (c_account_no, c_restructured_no)  -- Ensure unique combination of account and restructuring number
+);
+
+
+CREATE SEQUENCE t_restructuring_c_restructured_no_seq;
+
+ALTER TABLE t_restructuring 
+    ALTER COLUMN c_restructured_no SET DEFAULT nextval('t_restructuring_c_restructured_no_seq');
+
+SELECT setval('t_restructuring_c_restructured_no_seq', (SELECT MAX(c_restructured_no) FROM t_restructuring));
+
+
+
+
+CREATE TABLE roles (
+    id SERIAL PRIMARY KEY,                      -- Unique identifier for each role
+    role_name VARCHAR(50) NOT NULL UNIQUE,      -- Name of the role (must be unique)
+    description TEXT,                           -- Optional description of the role
+    is_active BOOLEAN DEFAULT TRUE,             -- Indicates if the role is active or deprecated
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp when the role was created
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Timestamp for tracking updates
+    approval_type VARCHAR(50),                  -- Approval type (e.g., "Account Restructuring", "Loan Approval")
+    approval_order INT                          -- The order in which this role should approve the request
+);
+
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_updated_at
+BEFORE UPDATE ON roles
+FOR EACH ROW
+EXECUTE PROCEDURE update_updated_at_column();
+
+
+-- Step 1: Create the 'requests' table without sequence first
+CREATE TABLE requests (
+    id INT PRIMARY KEY,           -- Create 'id' column without sequence
+    requester_id INT NOT NULL,     -- No foreign key constraint
+    description TEXT,
+    status VARCHAR(20) DEFAULT 'pending',
+    request_type VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Step 2: Create a sequence for the 'id' column of the 'requests' table
+CREATE SEQUENCE requests_id_seq 
+    START 1 
+    INCREMENT 1 
+    OWNED BY requests.id;  -- Link sequence to the 'id' column of the requests table
+
+-- Step 3: Alter the 'id' column of the 'requests' table to use the sequence
+ALTER TABLE requests 
+    ALTER COLUMN id SET DEFAULT nextval('requests_id_seq');
+
+-- Step 4: Create the 'approvals' table without sequence
+CREATE TABLE approvals (
+    id INT PRIMARY KEY,           -- Create 'id' column without sequence
+    request_id INT NOT NULL REFERENCES requests(id),  -- Link to requests
+    approver_id INT,              -- Specific person responsible
+    role_id INT REFERENCES roles(id),  -- Associated role
+    approval_status VARCHAR(20) DEFAULT 'pending',     -- Status: 'pending', 'approved', 'rejected'
+    approved_at TIMESTAMP,                             -- When approval happened
+    approval_order INT NOT NULL                        -- Order of approval
+);
+
+-- Step 5: Create a sequence for the 'id' column of the 'approvals' table
+CREATE SEQUENCE approvals_id_seq 
+    START 1 
+    INCREMENT 1 
+    OWNED BY approvals.id;  -- Link sequence to the 'id' column of the approvals table
+
+-- Step 6: Alter the 'id' column of the 'approvals' table to use the sequence
+ALTER TABLE approvals 
+    ALTER COLUMN id SET DEFAULT nextval('approvals_id_seq');
+
+
+INSERT INTO roles (role_name, description) VALUES
+('billing_supervisor', 'Supervises billing approval process'),
+('finance_manager', 'Approves finance-related requests'),
+('chief_finance_officer', 'Final financial approval authority'),
+('engineering_officer', 'Approves engineering-related requests'),
+('chief_operation_officer', 'Final executive approval authority');
+
+
+INSERT INTO request_approval_levels (request_type, role_id, approval_order) VALUES
+('restructuring', 1, 1),  -- Billing Supervisor (order 1)
+('restructuring', 2, 2),  -- Finance Manager (order 2)
+('restructuring', 3, 3);  -- Chief Finance Officer (order 3)
+
+
+
+CREATE TABLE approvers (
+    id INT PRIMARY KEY,
+    request_type VARCHAR(50) NOT NULL,   -- The type of request (e.g., 'account_restructuring')
+    role_id INT NOT NULL,                -- Role ID (from roles table)
+    approval_order INT NOT NULL,         -- The order in which the approval occurs (1 for first approver)
+    FOREIGN KEY (role_id) REFERENCES roles(id)  -- Link to the roles table
+);
+
+CREATE SEQUENCE approvers_id_seq 
+    START 1 
+    INCREMENT 1 
+    OWNED BY approvers.id;  
+
+-- Link the sequence to the 'id' column
+ALTER TABLE approvers
+    ALTER COLUMN id SET DEFAULT nextval('approvers_id_seq');
+
+
+
+
+CREATE TABLE t_new_commission_log
+(
+    c_code integer,
+    c_account_no bigint,
+    c_buyers_name text,
+    c_commission_amount double precision,
+    c_rate double precision,
+    c_net_commission double precision,
+    c_prev_comm double precision,
+    c_due_comm double precision,
+    c_prev_comm_amt double precision,
+    c_commission_count integer,
+    c_print_date date
+);
+
+
+
+
+CREATE OR REPLACE VIEW view_sequential_approvals AS
+SELECT 
+    r.id AS request_id,
+    r.requester_id,
+    r.description AS request_description,
+    r.request_type,
+    r.status AS request_status,
+    a.id AS approval_id,
+    a.role_id,
+    a.approver_id,
+    a.approval_status,
+    a.approval_order,
+    roles.role_name AS approver_role,
+    COALESCE(
+        (SELECT ap.approval_status 
+         FROM approvals ap 
+         WHERE ap.request_id = r.id AND ap.approval_order = a.approval_order - 1
+        ), 'approved'
+    ) AS previous_status
+FROM 
+    requests r
+JOIN 
+    approvals a ON r.id = a.request_id
+JOIN 
+    roles ON a.role_id = roles.id
+WHERE 
+    a.approval_order = 1 
+    OR (a.approval_order > 1 AND 
+        (SELECT ap.approval_status 
+         FROM approvals ap 
+         WHERE ap.request_id = r.id AND ap.approval_order = a.approval_order - 1) = 'approved');

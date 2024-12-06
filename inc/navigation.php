@@ -83,7 +83,7 @@ $level = $_settings->userdata('type');
                     <?php if ($level < 4 or $usertype == "Purchasing Officer"){ ?>
                     <li class="nav-item dropdown">
                       <a href="<?php echo base_url ?>admin/?page=po/purchase_orders/" class="nav-link nav-cpo">
-                      <i class="nav-icon fas fa-file"></i>
+                      <!-- <i class="nav-icon fas fa-file"></i> -->
                         <p>
                           PO List
                         </p>

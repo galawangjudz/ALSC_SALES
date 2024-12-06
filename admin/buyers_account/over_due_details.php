@@ -1,11 +1,9 @@
 <?php
 
 function load_data($conn2,$id,$l_pay_date_val){
-    
-        // Query to get buyer's account details
+
         $query1 = "SELECT * FROM t_buyers_account WHERE c_account_no = ?";
 
-        // Prepare and execute the statement
         $stmt1 = odbc_prepare($conn2, $query1);
         $result1 = odbc_execute($stmt1, array($id));
 
@@ -49,6 +47,7 @@ function load_data($conn2,$id,$l_pay_date_val){
        
         if (odbc_num_rows($stmt) <= 0) {
         echo 'No Payment Records for this Account!';
+        
         }
 
         // Fetch all payments data

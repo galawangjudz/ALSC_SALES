@@ -23,12 +23,7 @@ if (!$conn) {
     die("Connection failed: " . odbc_errormsg());
 }
 
-
-
-
-
 $l_acct_no = isset($_GET["acct_no"]) ? $_GET["acct_no"] : '' ;
-
 
 if($l_acct_no != ''){
   
@@ -43,7 +38,18 @@ if($l_acct_no != ''){
     }
 }
 ?>
-
+<style>
+.nav-buyer{
+    background-color:#007bff;
+    color:white!important;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.1);
+}
+.nav-buyer:hover{
+    background-color:#007bff!important;
+    color:white!important;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.2), 0 1px 1px 0 rgba(0, 0, 0, 0.1)!important;
+}
+</style>
 
 <div class="card card-outline rounded-0 card-maroon">
     <div class="card-header">
@@ -53,18 +59,27 @@ if($l_acct_no != ''){
         <div class="pd-20">   
             <div class="container-fluid">
                 <div class="container">
-                    <form action="" id="filter">
-                        <?php $l_acct_no  = '' ?>
-                        <div class="row align-items-end">
-                            <input type="hidden" id="page" name="page" value="buyers_account" class="form-control form-control-sm rounded-0">
-                            <div class="col-md-3 form-group">
-                                <input type="text" id="acct_no" name="acct_no" value="<?= $l_acct_no ?>" class="form-control" placeholder="Enter Account No" maxlength="11">
-                            </div>
-                            <div class="col-md-3 form-group">
-                                <button class="btn btn-primary"><i class="fa fa-search"></i> Find Account</button>
-                            </div>
+                <form action="" id="filter">
+                    <?php $l_acct_no = ''; ?>
+                    <div class="row align-items-end">
+                        <input type="hidden" id="page" name="page" value="buyers_account" class="form-control form-control-sm rounded-0">
+                        <div class="col-md-3 form-group">
+                            <input type="text" id="acct_no" name="acct_no" value="<?= $l_acct_no ?>" class="form-control" placeholder="Enter Account No" maxlength="11">
                         </div>
-                    </form>
+                        <div class="col-md-3 form-group">
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> Find Account</button>
+                        </div>
+                    </div>
+                </form>
+                <script>
+                    document.getElementById('filter').addEventListener('submit', function (event) {
+                        const acctNoInput = document.getElementById('acct_no').value.trim();
+                        if (!acctNoInput) {
+                            alert("Please enter account number first.");
+                            event.preventDefault(); 
+                        }
+                    });
+                </script>
                     <ul class="nav nav-tabs" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <a class="nav-link active" id="buyer-details-tab" data-toggle="tab" href="#buyer-details" role="tab" aria-controls="buyer-details" aria-selected="true">Buyer's Profile</a>
@@ -96,50 +111,50 @@ if($l_acct_no != ''){
                                     <tr>
                                         <td style="width: 15%;border-top:none;border-bottom:none;border-left:none;">
                                             <h4 class="text-red h6">Buyer's Profile</h4>
-                                            
                                         </td>
                                         <td></td>
                                         <td style="width: 15%;border-top:none;border-bottom:none;border-left:none;">
-                                       
-                                            <div class="dropdown">
-                                                <button type="button" class="btn btn-block btn-sm btn-danger btn-flat border-danger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                    <i class="fa fa-cogs"></i> Settings 
-                                                </button>
-                                                <div class="dropdown-menu">
-                                                    <a class="dropdown-item update_bci" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Update BCI</a>
-                                                    
+                                        <div class="dropdown">
+                                            <button 
+                                                type="button" 
+                                                class="btn btn-block btn-sm btn-danger btn-flat border-danger dropdown-toggle" 
+                                                data-toggle="dropdown" 
+                                                aria-haspopup="true" 
+                                                aria-expanded="false" 
+                                                id="settingsButton">
+                                                <i class="fa fa-cogs"></i> Settings
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                <a class="dropdown-item update_bci" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Update BCI</a>
                                                 <?php 
-                                                    // Check if account status is 'Fully Paid' or balance is zero
                                                     if ($row['c_account_status'] != 'Fully Paid' && $row['c_balance'] > 0) {
-                                                        // If account is not fully paid and balance is not zero, show Set Retention and Account Restructuring
-                                                        
-                                                        // Check if retention is 0 or 1
                                                         if ($row['c_retention'] == '0') {
-                                                            // If c_retention is 0, show 'Set Retention'
                                                             echo '<a class="dropdown-item set_retention" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)">Set Retention</a>';
                                                         } elseif ($row['c_retention'] == '1') {
-                                                            // If c_retention is 1, show 'Remove Retention'
                                                             echo '<a class="dropdown-item remove_retention" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)">Remove Retention</a>';
                                                         }
-
-                                                        // Show 'Account Restructuring' if conditions are met
                                                         echo '<a class="dropdown-item account_rest" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)">Account Restructuring</a>';
                                                     } else {
-                                                        // Disable the items by making them unclickable or hiding them
                                                         echo '<a class="dropdown-item set_retention disabled" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)" style="pointer-events: none; opacity: 0.5;">Set Retention</a>';
                                                         echo '<a class="dropdown-item account_rest disabled" data-acc="' . $row['c_account_no'] . '" href="javascript:void(0)" style="pointer-events: none; opacity: 0.5;">Account Restructuring</a>';
                                                     }
                                                 ?>
-
-                                                    
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item billing_remark" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Billing Remarks</a>
-                                                    <div class="dropdown-divider"></div>
-                                                    <a class="dropdown-item additional_inv" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Add to Additional Inventory</a>
-                                                </div>
-
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item billing_remark" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Billing Remarks</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item additional_inv" data-acc="<?php echo $row['c_account_no']; ?>" href="javascript:void(0)">Add to Additional Inventory</a>
                                             </div>
-                                       
+                                        </div>
+                                        <script>
+                                            document.getElementById('settingsButton').addEventListener('click', function (event) {
+                                                const acctNoInput = document.getElementById('buyer_acc_no').value.trim();
+                                                if (!acctNoInput) {
+                                                    alert("Please enter account number first.");
+                                                    event.stopPropagation(); 
+                                                }
+                                            });
+                                        </script>
+
                                         </td>
                                     </tr>
                                 </table>
@@ -376,6 +391,10 @@ $(document).ready(function() {
     $('.account_rest').click(function(){
 		uni_modal("Account Restructuring","buyers_account/restructuring.php?acc="+$(this).attr('data-acc'),'mid-large')
 	});
+   /*  $('.account_rest').click(function() {
+    
+        window.location.href = "./?page=buyers_account/restructuring";
+    }); */
 
     $('.billing_remark').click(function(){
 		uni_modal("Billing Remarks Window","buyers_account/billing_remarks.php?acc="+$(this).attr('data-acc'),'mid-large')
@@ -457,8 +476,6 @@ $(document).ready(function() {
                 }
         })
     }
-
-
 
     document.addEventListener("DOMContentLoaded", function() {
       // Restore active tab from local storage

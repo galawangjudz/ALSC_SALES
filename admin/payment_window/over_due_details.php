@@ -2,12 +2,10 @@
 function auto_date($cnx2,$id,$last_day, $date) {
   
     $date_arr = date_parse($date);
-    //echo $last_day;
     $year = $date_arr['year'];
     $month = $date_arr['month'];
     $day = $date_arr['day'];
 
-    // Prepare and execute the query
     $l_sql = "SELECT c_retention, c_change_date, c_restructured, c_date_of_sale 
     FROM t_buyers_account
     WHERE c_account_no = '$id'";
@@ -17,7 +15,6 @@ function auto_date($cnx2,$id,$last_day, $date) {
     die('Error in SQL query: ' . odbc_errormsg($cnx2));
     }
 
-    // Fetch results
     if ($row = odbc_fetch_array($l_qry)) {
     $change_date = $row['c_change_date'];
     $date_of_sale = $row['c_date_of_sale'];
@@ -30,7 +27,6 @@ function auto_date($cnx2,$id,$last_day, $date) {
         $last_day = 31;
        
     }
-
     
     if ($month == 1):
         if ($last_day < 28):
