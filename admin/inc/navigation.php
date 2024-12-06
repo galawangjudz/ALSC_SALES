@@ -8,6 +8,7 @@ $stmt->bind_param('s', $user_code);
 $stmt->execute();
 $result = $stmt->get_result();
 
+
 if ($result->num_rows > 0) {
     $permissions = $result->fetch_assoc();
     $new_client_btn = $permissions['new_client_btn'];
@@ -82,6 +83,79 @@ if ($result->num_rows > 0) {
                                 <p>
                                   Clients
                                 </p>
+
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=buyers_account" class="nav-link nav-buyers_account">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Buyer's Account
+                                      </p>
+                                    </a>
+                                  </li> 
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=payment_window" class="nav-link nav-buyers_account">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Payments
+                                      </p>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=requests" class="nav-link nav-buyers_account">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Requests
+                                      </p>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=approvals" class="nav-link nav-buyers_account">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Approvals
+                                      </p>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=buyers_account/commission_voucher/comm_voucher" class="nav-link nav-buyers_account">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Commission Voucher
+                                      </p>
+                                    </a>
+                                  </li>
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=buyers_account/commission_voucher/new_comm_voucher" class="nav-link nav-buyers_account">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Commission Voucher per Agent
+                                      </p>
+                                    </a>
+                                  </li> 
+                                  <li class="nav-item dropdown">
+                                    <a href="<?php echo base_url ?>admin/?page=inventory/lot-list" class="nav-link nav-inventory">
+                                    <i class="nav-icon fas fa-cube"></i>
+                                      <p>
+                                        Inventory
+                                      </p>
+                                    </a>
+                                  </li> 
+                              </ul>
+                          </div>
+                      </div>
+                  </div>
+                 
+              
+                  <div class="accordion" id="maintenanceAccordion" style="margin-bottom:5px;">
+                      <button class="btn btn-link" type="button" data-target="#collapseMaintenance" aria-expanded="true" aria-controls="collapseMaintenance" style="background-color:gainsboro;width:270px;height:30px;padding-top:0; display: inline-block;text-align:left;">
+                        <b><i><li class="nav-header" style="margin-left:-10px">Maintenance</li></b></i>
+                      </button>
+                      <div id="collapseMaintenance" aria-labelledby="maintenanceHeading" data-parent="#maintenanceAccordion">
+                      <div style="margin-left:15px">
+                          <ul class="nav flex-column">
+                            <li class="nav-item">
+                              <a href="<?php echo base_url ?>admin/?page=agents_list/list" class="nav-link nav-nav-list">
+                                <i class="nav-icon fa fa-id-card"></i> <p>Agents List</p>
                               </a>
                             </li> 
                             <?php endif; ?>
