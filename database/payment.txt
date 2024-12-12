@@ -1,0 +1,27 @@
+
+CREATE SEQUENCE t_invoice_invoice_id_seq START 1
+    INCREMENT 1 
+    OWNED BY t_invoice.invoice_id;  ;
+
+CREATE TABLE t_invoice (
+  invoice_id BIGINT DEFAULT nextval('t_invoice_invoice_id_seq') PRIMARY KEY,
+  property_id BIGINT DEFAULT NULL,
+  payment_amount NUMERIC(10,2) DEFAULT NULL,
+  pay_date DATE DEFAULT NULL,
+  due_date DATE DEFAULT NULL,
+  or_no VARCHAR(30) DEFAULT NULL,
+  amount_due NUMERIC(10,2) DEFAULT NULL,
+  rebate NUMERIC(10,2) DEFAULT NULL,
+  surcharge NUMERIC(10,2) DEFAULT NULL,
+  interest NUMERIC(10,2) DEFAULT NULL,
+  principal NUMERIC(10,2) DEFAULT NULL,
+  remaining_balance NUMERIC(10,2) DEFAULT NULL,
+  status VARCHAR(20) DEFAULT NULL,
+  status_count SMALLINT NOT NULL,
+  payment_count INT DEFAULT NULL,
+  excess DOUBLE PRECISION NOT NULL,
+  account_status VARCHAR(100) NOT NULL,
+  trans_date DATE DEFAULT NULL,
+  surcharge_percent INT NOT NULL,
+  gen_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
